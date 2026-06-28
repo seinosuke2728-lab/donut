@@ -1,0 +1,382 @@
+import { setQuizState, state, renderQuizContentState, myProblemSetsDialogMode, allQuizes } from "./state.js";
+import { initEditSetting, setEditState1, setEditState2, setEditState3, setEditState4, setEditState5 } from "./edit.js";
+import { setQuiz, setQuizMyProblemSets, setQuizUnit, setQuizWhere, startQuiz } from "./quiz.js";
+
+
+export function navigate({ page, panel } = {}) {
+
+    // ---- PAGE切替 ----
+    if (page) {
+        document.querySelectorAll(".page").forEach(p => {
+            p.classList.remove("active");
+        });
+
+        const targetPage = document.getElementById(page);
+        if (targetPage) {
+            targetPage.classList.add("active");
+        }
+        pages[page]?.onShow?.();
+    }
+
+    // ---- PANEL切替 ----
+    if (panel) {
+        if (panels[panel]?.editValidation?.()) {
+            alert("不適切な値があります");
+            return;
+        }
+        document.querySelectorAll(".panel").forEach(p => {
+            p.classList.remove("active");
+        });
+
+        const targetPanel = document.getElementById(panel);
+        if (targetPanel) {
+            targetPanel.classList.add("active");
+        }
+        panels[panel]?.onShow?.();
+    }
+}
+
+const pages = {
+    home: {
+        onShow: renderHome
+    },
+    editSetting: {
+        onShow: renderEditSetting
+    },
+    quiz: {
+        onShow: renderQuiz
+    }
+};
+
+
+const panels = {
+    homeEdit: {
+        onShow: renderHomeEdit
+    },
+    homeQuiz: {
+        onShow: renderHomeQuiz
+    },
+    homeLog: {
+        onShow: renderHomeLog
+    },
+    homeSetting: {
+        onShow: renderHomeSetting
+    },
+    editSetting1: {
+        onShow: renderEditSetting1
+    },
+    editSetting2: {
+        onShow: renderEditSetting2
+    },
+    editSetting3: {
+        onShow: renderEditSetting3
+    },
+    editSetting4: {
+        onShow: renderEditSetting4
+    },
+    editSetting5: {
+        onShow: renderEditSetting5
+    },
+    quizContent: {
+        onShow: renderQuizContent
+    },
+    result: {
+        onShow: renderResult
+    }
+};
+
+
+function renderEditSetting() {
+
+}
+function renderHome() {
+
+}
+function renderHomeEdit() {
+
+}
+function renderHomeLog() {
+
+}
+function renderHomeQuiz() {
+    setQuizUnit();
+    setQuizWhere();
+    setQuizMyProblemSets();
+
+}
+function renderHomeSetting() {
+
+}
+function renderQuiz() {
+    setQuiz();
+    console.log("quiz");
+    state.currentQuizNumber = 0;
+    startQuiz();
+
+
+}
+function renderQuizContent() {
+}
+function renderResult() {
+
+}
+function renderEditSetting1() {
+    initEditSetting();
+
+}
+function renderEditSetting2() {
+    setEditState1();
+
+}
+function renderEditSetting3() {
+    setEditState2();
+
+}
+function renderEditSetting4() {
+    setEditState3();
+
+}
+function renderEditSetting5() {
+    setEditState4();
+
+}
+
+function renderModeSettingChips() {
+
+    document
+        .querySelectorAll("#modeSettingChips .chipButton")
+        .forEach(chip => {
+
+            chip.classList.toggle(
+                "is-selected",
+                chip.dataset.value === state.edit.mode
+            );
+
+        });
+
+}
+function renderHomeworkCustomChips() {
+
+    document
+        .querySelectorAll("#homeworkCustomChips .chipButton")
+        .forEach(chip => {
+
+            chip.classList.toggle(
+                "is-selected",
+                chip.dataset.value === state.quiz.mode
+            );
+
+        });
+
+}
+
+export function renderAllMyproblemSetsButton() {
+
+    document
+        .querySelectorAll(".myProblemSetsButton")
+        .forEach(btn => {
+
+            btn.classList.toggle(
+                "is-selected"
+            );
+
+        });
+
+}
+export function renderMyproblemSetsButton(id) {
+    document
+        .querySelectorAll(".myProblemSetsButton")
+        .forEach(btn => {
+            btn.addEventListener("click", (e) => {
+
+                document
+                    .getElementById(e.target.id)
+                    .classList.toggle(
+                        "is-selected"
+                    );
+
+                if (document
+                    .getElementById(e.target.id)
+                    .classList.contains("is-selected")) {
+                    state.edit.myProblemSets.push(e.target.id);
+                } else {
+                    state.edit.myProblemSets.splice(e.target.id);
+                }
+            })
+
+            if (state.edit.myProblemSets.includes(btn.id)) {
+                btn.classList.add(
+                    "is-selected"
+                );
+            }
+
+        }
+
+
+
+        );
+
+
+
+
+}
+
+
+
+
+export function initNavigation() {
+    navigate({ page: "home", panel: "homeEdit" });
+
+    document.addEventListener("click", e => {
+
+        const el = e.target.closest("[data-page],[data-panel]");
+        if (!el) return;
+
+        navigate({
+            page: el.dataset.page,
+            panel: el.dataset.panel
+        });
+
+
+    });
+    document.addEventListener("click", e => {
+        if (e.target.id === "quizContentInCorrent" || e.target.id === "quizContentCorrent") {
+
+        } else {
+
+
+            const button = e.target.closest("[data-visibility]");
+            if (!button) return;
+
+
+            changeVisibility(button.dataset.visibility);
+
+        }
+
+    });
+
+    document.addEventListener("click", e => {
+
+
+        const button = e.target.closest("[data-dialog]");
+        if (!button) return;
+
+
+        showDialog(button.dataset.dialog);
+
+    });
+
+    document.addEventListener("click", e => {
+
+
+        const button = e.target.closest("[data-close]");
+        if (!button) return;
+
+
+        closeSidebar(button.dataset.close);
+
+    });
+
+
+    document
+        .querySelectorAll("#modeSettingChips .chipButton")
+        .forEach(chip => {
+
+            chip.addEventListener("click", () => {
+
+                state.edit.mode = chip.dataset.value;
+
+                renderModeSettingChips();
+
+            });
+
+        });
+    document
+        .querySelectorAll("#homeworkCustomChips .chipButton")
+        .forEach(chip => {
+
+            chip.addEventListener("click", () => {
+
+                state.quiz.mode = chip.dataset.value;
+
+                renderHomeworkCustomChips();
+
+            });
+
+        });
+    renderModeSettingChips();
+    renderHomeworkCustomChips();
+
+    document
+        .querySelectorAll(".myProblemSetsButton")
+        .forEach(chip => {
+
+            chip.addEventListener("click", () => {
+
+
+                renderAllMyproblemSetsButton();
+
+            });
+
+        });
+
+
+}
+
+export function changeVisibility(visibilityClass) {
+
+
+
+    document.querySelectorAll("." + visibilityClass).forEach(el => {
+        el.classList.toggle("active");
+        if (el.classList.contains("active")) {
+            visibilities[visibilityClass]?.onShow?.();
+
+        } else {
+
+            visibilities[visibilityClass]?.onHide?.();
+        }
+    });
+}
+
+const visibilities = {
+    quizContentNextVisibility: {
+        onShow: showAnswer,
+        onHide: hideAnswer
+    }
+}
+
+function showAnswer() {
+
+
+}
+
+function hideAnswer() {
+
+
+}
+
+export function showVisibility(visibilityClass) {
+    document.querySelectorAll("." + visibilityClass).forEach(el => {
+        if (!el.classList.contains("active")) {
+            el.classList.add("active");
+        }
+    });
+}
+
+
+
+
+
+
+function showDialog(dialogId) {
+    const dialog = document.getElementById(dialogId);
+
+    dialog.showModal();
+}
+
+
+function closeSidebar(closeId) {
+    const sidebar = document.getElementById(closeId);
+    sidebar.classList.toggle("close");
+}

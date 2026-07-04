@@ -86,22 +86,6 @@ const panels = {
 };
 
 
-function renderEditSetting() {
-
-}
-function renderHome() {
-
-}
-function renderHomeEdit() {
-
-}
-function renderHomeLog() {
-
-}
-function renderHomeSetting() {
-
-}
-
 
 function renderModeSettingChips() {
 
@@ -145,43 +129,6 @@ export function renderAllMyproblemSetsButton() {
         });
 
 }
-export function renderMyproblemSetsButton(id) {
-    document
-        .querySelectorAll(".myProblemSetsButton")
-        .forEach(btn => {
-            btn.addEventListener("click", (e) => {
-
-                document
-                    .getElementById(e.target.id)
-                    .classList.toggle(
-                        "is-selected"
-                    );
-
-                if (document
-                    .getElementById(e.target.id)
-                    .classList.contains("is-selected")) {
-                    state.edit.myProblemSets.push(e.target.id);
-                } else {
-                    state.edit.myProblemSets.splice(e.target.id);
-                }
-            })
-
-            if (state.edit.myProblemSets.includes(btn.id)) {
-                btn.classList.add(
-                    "is-selected"
-                );
-            }
-
-        }
-
-
-
-        );
-
-
-
-
-}
 
 
 
@@ -202,7 +149,7 @@ export function initNavigation() {
 
     });
 
-    
+
     document.addEventListener("click", e => {
         if (e.target.id === "quizContentInCorrent" || e.target.id === "quizContentCorrent") {
 
@@ -333,11 +280,6 @@ export function showVisibility(visibilityClass) {
 
 
 
-function showDialog(dialogId) {
-    const dialog = document.getElementById(dialogId);
-
-    dialog.showModal();
-}
 
 
 function closeSidebar(closeId) {

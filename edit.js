@@ -1,62 +1,179 @@
 import { addMyProblemSets } from "./db.js";
 import { state, saveState, saveUnit, saveWhere, japaneseUnit, socialStudiesUnit, scienceUnit, EnglishUnit, mathUnit, otherUnit, myProblemSetsDialogMode, socialStudiesWhere, japaneseWhere, mathWhere, scienceWhere, EnglishWhere, otherWhere, allMyProblemSets, saveMyProblemSets } from "./state.js"
-import { renderMyproblemSetsButton } from "./navigation.js"
+import { navigate } from "./navigation.js"
 
 export function initEdit() {
-    document.getElementById("editSetting").addEventListener("click", e => {
-        renderEditSetting();
+    document.getElementById("whileMode").addEventListener("click", e => {
+        state.edit.mode = "while";
+        renderEditSetting1();
+    });
+
+    document.getElementById("quizMode").addEventListener("click", e => {
+        state.edit.mode = "quiz";
+        renderEditSetting1();
+    });
+
+    document.getElementById("missMode").addEventListener("click", e => {
+        state.edit.mode = "miss";
+        renderEditSetting1();
+    });
+
+    document.getElementById("otherSettingSubjectSelect").addEventListener("change", e => {
+        state.edit.subject = e.target.value;
+        setEditUnit();
+        setEditWhere();
+        renderEditSetting1();
+    });
+
+    document.getElementById("otherSettingUnitSelect").addEventListener("change", e => {
+        state.edit.unit = e.target.value;
+        renderEditSetting1();
+    });
+
+    document.getElementById("otherSettingWhereSelect").addEventListener("change", e => {
+        state.edit.book = e.target.value;
+        renderEditSetting1();
+    });
+
+    document.getElementById("nextButton1").addEventListener("click", e => {
+        navigateToNextEditPanel();
+        renderEditSetting2();
+    });
+
+    document.getElementById("quizNumberSettingPageText").addEventListener("input", e => {
+        state.edit.page = e.target.value;
+        renderEditSetting2();
+    });
+
+    document.getElementById("quizNumberSettingQuizNumberAText").addEventListener("input", e => {
+        state.edit.numberA = e.target.value;
+        renderEditSetting2();
+    });
+
+    document.getElementById("quizNumberSettingQuizNumberBText").addEventListener("input", e => {
+        state.edit.numberB = e.target.value;
+        renderEditSetting2();
     });
 
     document
         .querySelector(".starButton1")
         .addEventListener("click", e => {
             state.edit.importance = 1;
-            renderEditImportance();
+            renderEditSetting2();
         });
     document
         .querySelector(".starButton2")
         .addEventListener("click", e => {
             state.edit.importance = 2;
-            renderEditImportance();
+            renderEditSetting2();
         });
     document
         .querySelector(".starButton3")
         .addEventListener("click", e => {
             state.edit.importance = 3;
-            renderEditImportance();
+            renderEditSetting2();
         });
     document
         .querySelector(".starButton4")
         .addEventListener("click", e => {
             state.edit.importance = 4;
-            renderEditImportance();
+            renderEditSetting2();
         });
 
-    document
-        .getElementById("editFinish").addEventListener("click", async e => {
-            saveState(state.edit);
-            saveUnit(state.edit.subject, state.edit.unit);
-            saveWhere(state.edit.subject, state.edit.book);
-            saveMyProblemSets(state.edit.myProblemSets);
-        })
+    document.getElementById("nextButton2").addEventListener("click", e => {
+        navigateToNextEditPanel();
+        renderEditSetting3();
+    });
 
-    document.getElementById("otherSettingSubjectSelect").addEventListener("change", e => {
-        setEditUnit();
-        setEditWhere();
-    })
+    document.getElementById("quizContentSettingQuizText").addEventListener("input", e => {
+        state.edit.question = e.target.value;
+        renderEditSetting3();
+    });
+
+    document.getElementById("quizContentSettingAnswerText").addEventListener("input", e => {
+        state.edit.answer = e.target.value;
+        renderEditSetting3();
+    });
+
+    document.getElementById("quizContentSettingMyAnswerText").addEventListener("input", e => {
+        state.edit.myAnswer = e.target.value;
+        renderEditSetting3();
+    });
+
+    document.getElementById("nextButton3").addEventListener("click", e => {
+        navigateToNextEditPanel();
+        renderEditSetting4();
+    });
+
+    document.getElementById("quizMissSettingMissKindSelect").addEventListener("change", e => {
+        state.edit.missKind = e.target.value;
+        renderEditSetting4();
+    });
+
+    document.getElementById("quizMissSettingLessonSelect").addEventListener("change", e => {
+        state.edit.lesson = e.target.value;
+        renderEditSetting4();
+    });
+
+    document.getElementById("nextButton4").addEventListener("click", e => {
+        navigateToNextEditPanel();
+        renderEditSetting5();
+    });
+
+
+
+    document.getElementById("editFinish").addEventListener("click", async e => {
+        saveState(state.edit);
+        saveUnit(state.edit.subject, state.edit.unit);
+        saveWhere(state.edit.subject, state.edit.book);
+    });
+
+    document.getElementById("editMyProblemSets").addEventListener("click", e => {
+        const dialog = document.getElementById("myProblemSetsDialog");
+        dialog.showModal();
+    });
 
     document.getElementById("myProblemSetsDecideButton").addEventListener("click", async e => {
         await saveMyProblemSets(document.getElementById("myProblemSetsInput").value);
         renderMyProblemSetsDialog();
+    });
 
-    })
+    document.getElementById("editContinue").addEventListener("click", e => {
+        const dialog = document.getElementById("continueDialog");
+        dialog.showModal();
+    });
 
 
-    document.getElementById("editMyProblemSets").addEventListener("click", e => {
-    })
+
+
+
+
 }
 
-function renderEditImportance() {
+function renderEditSetting1() {
+    document
+        .querySelectorAll("#modeSettingChips .chipButton")
+        .forEach(chip => {
+
+            chip.classList.toggle(
+                "is-selected",
+                chip.dataset.value === state.edit.mode
+            );
+
+        });
+
+    
+    document.getElementById("otherSettingSubjectSelect").value = state.edit.subject;
+    document.getElementById("otherSettingUnitSelect").value = state.edit.unit;
+    document.getElementById("otherSettingWhereSelect").value = state.edit.book;
+
+}
+
+function renderEditSetting2() {
+    document.getElementById("quizNumberSettingPageText").value = state.edit.page;
+    document.getElementById("quizNumberSettingQuizNumberAText").value = state.edit.numberA;
+    document.getElementById("quizNumberSettingQuizNumberBText").value = state.edit.numberB;
+
     document
         .querySelectorAll(".starButton")
         .forEach(btn => {
@@ -84,10 +201,21 @@ function renderEditImportance() {
             .querySelector(".starButton4")
             .classList.add("star-fill");
     }
+}
 
+function renderEditSetting3() {
+    document.getElementById("quizContentSettingQuizText").value = state.edit.question;
+    document.getElementById("quizContentSettingAnswerText").value = state.edit.answer;
+    document.getElementById("quizContentSettingMyAnswerText").value = state.edit.myAnswer;
+}
 
+function renderEditSetting4() {
+    document.getElementById("quizMissSettingMissKindSelect").value = state.edit.missKind;
+    document.getElementById("quizMissSettingLessonSelect").value = state.edit.lesson;
+}
 
-};
+function renderEditSetting5() {
+}
 
 function renderMyProblemSetsDialog() {
     document.getElementById("myProblemSetsInput").value = "";
@@ -105,7 +233,37 @@ function renderMyProblemSetsDialog() {
         .join("");
 
     console.log(buttonlist.innerHTML);
-    renderMyproblemSetsButton("myProblemSetsButton");
+    document
+        .querySelectorAll(".myProblemSetsButton")
+        .forEach(btn => {
+            btn.addEventListener("click", (e) => {
+
+                document
+                    .getElementById(e.target.id)
+                    .classList.toggle(
+                        "is-selected"
+                    );
+
+                if (document
+                    .getElementById(e.target.id)
+                    .classList.contains("is-selected")) {
+                    state.edit.myProblemSets.push(e.target.id);
+                } else {
+                    state.edit.myProblemSets.splice(e.target.id);
+                }
+            })
+
+            if (state.edit.myProblemSets.includes(btn.id)) {
+                btn.classList.add(
+                    "is-selected"
+                );
+            }
+
+        }
+
+
+
+        );
 
 }
 
@@ -113,66 +271,8 @@ function renderMyProblemSetsDialog() {
 export function initEditSetting() {
     setEditUnit();
     setEditWhere();
-
 }
 
-export function setEditState1() {
-    state.edit.mode = document.querySelector("#modeSettingChips .chipButton.is-selected").dataset.value;
-    state.edit.subject = document.getElementById("otherSettingSubjectSelect").value;
-    state.edit.unit = document.getElementById("otherSettingUnitSelect").value;
-    state.edit.book = document.getElementById("otherSettingWhereSelect").value;
-}
-export function setEditState2() {
-    state.edit.page = document.getElementById("quizNumberSettingPageText").value;
-    state.edit.number = document.getElementById("quizNumberSettingQuizNumberAText").value + document.getElementById("quizNumberSettingQuizNumberBText").value;
-}
-
-export function setEditState3() {
-    state.edit.question = document.getElementById("quizContentSettingQuizText").value;
-    state.edit.answer = document.getElementById("quizContentSettingAnswerText").value;
-    state.edit.myAnswer = document.getElementById("quizContentSettingMyAnswerText").value;
-}
-
-export function setEditState4() {
-    state.edit.missKind = document.getElementById("quizMissSettingMissKindSelect").value;
-    state.edit.lesson = document.getElementById("quizMissSettingLessonSelect").value;
-
-}
-
-export function setEditState5() {
-}
-
-export function editValidation1() {
-}
-
-// ---- Render functions ----
-export function renderEditSetting() {
-
-}
-
-export function renderEditSetting1() {
-    initEditSetting();
-}
-
-export function renderEditSetting2() {
-    setEditState1();
-}
-
-export function renderEditSetting3() {
-    setEditState2();
-}
-
-export function renderEditSetting4() {
-    setEditState3();
-}
-
-export function renderEditSetting5() {
-    setEditState4();
-}
-
-export function saveQuiz() {
-
-}
 
 export function setEditUnit() {
     const subject = document.getElementById("otherSettingSubjectSelect").value;
@@ -233,7 +333,7 @@ export function setEditWhere() {
             wheres = scienceWhere.map(u => u.where);
             break;
 
-        case "nglish":
+        case "English":
             wheres = EnglishWhere.map(u => u.where);
             break;
 
@@ -250,3 +350,23 @@ export function setEditWhere() {
         .join("");
 }
 
+
+function navigateToNextEditPanel() {
+    const currentPanel = state.edit.currentPanel;
+    if (currentPanel === "editSetting1") {
+        state.edit.currentPanel = "editSetting2";
+        navigate({ panel: "editSetting2" });
+    } else if (currentPanel === "editSetting2") {
+        state.edit.currentPanel = "editSetting3";
+        navigate({ panel: "editSetting3" });
+    } else if (currentPanel === "editSetting3") {
+        state.edit.currentPanel = "editSetting4";
+        navigate({ panel: "editSetting4" });
+    } else if (currentPanel === "editSetting4") {
+        state.edit.currentPanel = "editSetting5";
+        navigate({ panel: "editSetting5" });
+    } else if (currentPanel === "editSetting5") {
+        state.edit.currentPanel = null;
+        navigate({ page: "home", panel: "homeEdit" });
+    }
+}

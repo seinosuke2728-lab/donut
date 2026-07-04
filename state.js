@@ -94,7 +94,11 @@ export const state={
     isCheckedOnly:false,
     number:0
 
-  }
+  },
+
+  homeMode:"edit",
+
+  customOrHomework:"homework"
 };
 
 export function setQuizState(question){
@@ -133,6 +137,8 @@ export function renderQuizContentState(){
     document.getElementById("quizContentAnswer").textContent = state.quiz.answer;
     document.getElementById("quizContentMyAnswer").textContent = state.quiz.myAnswer;
     document.getElementById("quizContentMissKind").textContent = state.quiz.missKind;
+    document.getElementById("quizContentCurrentPercent").textContent = Math.round(state.quiz.correntTimes/state.quiz.times*100)+"%";
+    document.getElementById("quizContentSeconds").textContent = state.quiz.secondsRecorde+"秒";
     document.getElementById("quizContentLesson1").textContent = state.quiz.lesson;
     document.getElementById("quizContentLesson2").textContent = state.quiz.lesson;
 

@@ -3,6 +3,10 @@ import { state, saveState, saveUnit, saveWhere, japaneseUnit, socialStudiesUnit,
 import { renderMyproblemSetsButton } from "./navigation.js"
 
 export function initEdit() {
+    document.getElementById("editSetting").addEventListener("click", e => {
+        renderEditSetting();
+    });
+
     document
         .querySelector(".starButton1")
         .addEventListener("click", e => {
@@ -141,8 +145,30 @@ export function setEditState5() {
 export function editValidation1() {
 }
 
+// ---- Render functions ----
+export function renderEditSetting() {
 
+}
 
+export function renderEditSetting1() {
+    initEditSetting();
+}
+
+export function renderEditSetting2() {
+    setEditState1();
+}
+
+export function renderEditSetting3() {
+    setEditState2();
+}
+
+export function renderEditSetting4() {
+    setEditState3();
+}
+
+export function renderEditSetting5() {
+    setEditState4();
+}
 
 export function saveQuiz() {
 

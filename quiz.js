@@ -12,10 +12,10 @@ export function initQuiz() {
     });
     document.getElementById("quizContentInCorrent").addEventListener("click", e => {/*結構あかんことしててすみません*/
         const button = e.target.closest("[data-visibility]");
-            if (!button) return;
+        if (!button) return;
 
 
-            
+
         console.log(state.quizesList[state.currentQuizNumber]);
         console.log(state.currentQuizNumber);
         console.log(state.quizesList);
@@ -25,20 +25,20 @@ export function initQuiz() {
         state.currentQuizNumber = state.currentQuizNumber + 1;
         console.log(state.quizesList.length + state.currentQuizNumber)
         if (state.quizesList.length === state.currentQuizNumber) {
-            navigate({panel:"result"});
-            
-        }else{
+            navigate({ panel: "result" });
+
+        } else {
             changeVisibility(button.dataset.visibility);
             startQuiz();
-            
+
 
         }
 
     });
 
     document.getElementById("quizResultFinish").addEventListener("click", e => {/*結構あかんことしててすみません*/
-        navigate({page:"home",panel:"homeQuiz"})
-        
+        navigate({ page: "home", panel: "homeQuiz" })
+
 
     });
 
@@ -189,12 +189,44 @@ export function startQuiz() {
     state.quizStartTime = Date.now();
 }
 
+// ---- Render functions ----
+export function renderQuiz() {
+    setQuiz();
+    console.log("quiz");
+    state.currentQuizNumber = 0;
+    startQuiz();
+}
+
+export function renderHomeQuiz() {
+    setQuizUnit();
+    setQuizWhere();
+    setQuizMyProblemSets();
+}
+
+export function renderQuizContent() {
+}
+
+export function renderResult() {
+
+}
 
 async function inCorrectQuiz(quiz) {
-    const timeMs = Date.now() - state.quizStartTime;
-    quiz.second = Math.floor(timeMs / 1000);
     quiz.formerDate = Date.now();
     quiz.times = quiz.times + 1;
+    quiz.progress = quiz.progress + 1;
+    quiz.nextDate = getNextDate(quiz.importance, quiz.progress, quiz.formerDate);
+    console.log(quiz);
+    await upDateQuiz(quiz);
+
+
+}
+
+async function correctQuiz(quiz) {
+    const timeMs = Date.now() - state.quizStartTime;
+    quiz.seconds = Math.floor(timeMs / 1000);
+    quiz.formerDate = Date.now();
+    quiz.times = quiz.times + 1;
+    quiz.correctTimes = quiz.correctTimes + 1;
     quiz.progress = quiz.progress + 1;
     quiz.nextDate = getNextDate(quiz.importance, quiz.progress, quiz.formerDate);
     console.log(quiz);

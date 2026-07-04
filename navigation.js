@@ -1,6 +1,6 @@
 import { setQuizState, state, renderQuizContentState, myProblemSetsDialogMode, allQuizes } from "./state.js";
-import { initEditSetting, setEditState1, setEditState2, setEditState3, setEditState4, setEditState5 } from "./edit.js";
-import { setQuiz, setQuizMyProblemSets, setQuizUnit, setQuizWhere, startQuiz } from "./quiz.js";
+import { initEditSetting, setEditState1, setEditState2, setEditState3, setEditState4, setEditState5, renderEditSetting, renderEditSetting1, renderEditSetting2, renderEditSetting3, renderEditSetting4, renderEditSetting5 } from "./edit.js";
+import { setQuiz, setQuizMyProblemSets, setQuizUnit, setQuizWhere, startQuiz, renderQuiz, renderHomeQuiz, renderQuizContent, renderResult } from "./quiz.js";
 
 
 export function navigate({ page, panel } = {}) {
@@ -98,48 +98,10 @@ function renderHomeEdit() {
 function renderHomeLog() {
 
 }
-function renderHomeQuiz() {
-    setQuizUnit();
-    setQuizWhere();
-    setQuizMyProblemSets();
-
-}
 function renderHomeSetting() {
 
 }
-function renderQuiz() {
-    setQuiz();
-    console.log("quiz");
-    state.currentQuizNumber = 0;
-    startQuiz();
 
-
-}
-function renderQuizContent() {
-}
-function renderResult() {
-
-}
-function renderEditSetting1() {
-    initEditSetting();
-
-}
-function renderEditSetting2() {
-    setEditState1();
-
-}
-function renderEditSetting3() {
-    setEditState2();
-
-}
-function renderEditSetting4() {
-    setEditState3();
-
-}
-function renderEditSetting5() {
-    setEditState4();
-
-}
 
 function renderModeSettingChips() {
 
@@ -239,6 +201,8 @@ export function initNavigation() {
 
 
     });
+
+    
     document.addEventListener("click", e => {
         if (e.target.id === "quizContentInCorrent" || e.target.id === "quizContentCorrent") {
 

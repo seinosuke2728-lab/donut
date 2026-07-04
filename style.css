@@ -204,6 +204,11 @@ dialog{
   padding: 15px;
 }
 
+.sidebarButton.is-selected{
+  background: var(--yellow-color);
+  color: var(--cream-color);
+}
+
 .topbar{
 height: 60px;
 border-bottom: 1px solid #ccc;

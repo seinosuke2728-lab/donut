@@ -77,6 +77,7 @@ class MyProblemSets {
 }
 
 export async function initDB() {
+    await deleteDb();
     
     await open();
 

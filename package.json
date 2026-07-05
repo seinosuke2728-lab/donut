@@ -4,10 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "deploy": "gh-pages -d dist"
-  },
+  "dev": "vite",
+  "build": "vite build",
+  "deploy": "gh-pages -d dist"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",

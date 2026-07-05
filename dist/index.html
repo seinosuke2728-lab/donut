@@ -7,8 +7,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Donut Test</title>
-  <script type="module" crossorigin src="/donut/assets/index-mu9WZwDn.js"></script>
-  <link rel="stylesheet" crossorigin href="/donut/assets/index-lu0MwTtj.css">
+  <script type="module" crossorigin src="/donut/assets/index-B0mH_HP8.js"></script>
+  <link rel="stylesheet" crossorigin href="/donut/assets/index-C1_Pb9r-.css">
 </head>
 
 <body>
@@ -110,7 +110,7 @@
           <button id="custom" data-value="custom"
             class="button chipButton homeworkCustomChip transition hover-chip u-text-sm">カスタム</button>
         </div>
-        <div id="delinquentToday" class="grid grid-1-1 gap-40-20">
+        <div id="delinquentToday" class="visibility-grid grid-1-1 gap-40-20">
           <label class="text u-text-lg text-bold"><input id="delinquentCheckbox" type="checkbox"
               class="checkBox">滞納</label>
           <div id="delinquent" class="horizontalContainer">
@@ -121,7 +121,7 @@
               checked>今日</label>
           <h3 id="todayNumber" class="numberOfQuizes"></h3>
         </div>
-        <div id="customQuizes" class="grid grid-1-1 gap-40-20">
+        <div id="customQuizes" class="visibility-grid grid-1-1 gap-40-20">
           <label id="customQuizesMyProblemSetsLabel" data-dialog="myProblemSetsDialog"
             class="text u-text-lg text-bold">My問題集</label>
           <select id="customQuizesMyProblemSetsSelect" class="select">
@@ -333,10 +333,15 @@
           </p>
 
           <div id="missKindCurrentPercent" class="grid grid-3-1">
+
             <p id="quizContentMissKind"
               class="text u-text-md text-bold visibility-block quizContentNextVisibility quizContentCheckVisibility active">
               計算ミス</p>
-            <p id="quizContentCurrentPercent" class="text u-text-md text-bold">50%</p>
+            <div class="grid grid-1-1">
+
+              <p id="quizContentCurrentPercent" class="text u-text-md text-bold">50%</p>
+              <p id="quizContentSeconds" class="text u-text-md text-bold">50%</p>
+            </div>
           </div>
           <div id="quizContentMissKindDetail"
             class="missKindDetail relative visibility-block quizContentNextVisibility quizContentCheckVisibility active">

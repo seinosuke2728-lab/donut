@@ -123,6 +123,7 @@ export function initEdit() {
 
 
     document.getElementById("editFinish").addEventListener("click", async e => {
+        navigateToNextEditPanel();
         saveState(state.edit);
         saveUnit(state.edit.subject, state.edit.unit);
         saveWhere(state.edit.subject, state.edit.book);
@@ -150,7 +151,7 @@ export function initEdit() {
 
 }
 
-function renderEditSetting1() {
+export function renderEditSetting1() {
     document
         .querySelectorAll("#modeSettingChips .chipButton")
         .forEach(chip => {
@@ -169,7 +170,7 @@ function renderEditSetting1() {
 
 }
 
-function renderEditSetting2() {
+export function renderEditSetting2() {
     document.getElementById("quizNumberSettingPageText").value = state.edit.page;
     document.getElementById("quizNumberSettingQuizNumberAText").value = state.edit.numberA;
     document.getElementById("quizNumberSettingQuizNumberBText").value = state.edit.numberB;
@@ -203,21 +204,21 @@ function renderEditSetting2() {
     }
 }
 
-function renderEditSetting3() {
+export function renderEditSetting3() {
     document.getElementById("quizContentSettingQuizText").value = state.edit.question;
     document.getElementById("quizContentSettingAnswerText").value = state.edit.answer;
     document.getElementById("quizContentSettingMyAnswerText").value = state.edit.myAnswer;
 }
 
-function renderEditSetting4() {
+export function renderEditSetting4() {
     document.getElementById("quizMissSettingMissKindSelect").value = state.edit.missKind;
     document.getElementById("quizMissSettingLessonSelect").value = state.edit.lesson;
 }
 
-function renderEditSetting5() {
+export function renderEditSetting5() {
 }
 
-function renderMyProblemSetsDialog() {
+export function renderMyProblemSetsDialog() {
     document.getElementById("myProblemSetsInput").value = "";
     const buttonlist = document.getElementById("myProblemSetsButtons");
 
@@ -352,7 +353,9 @@ export function setEditWhere() {
 
 
 function navigateToNextEditPanel() {
-    const currentPanel = state.edit.currentPanel;
+
+    const currentPanel = state.navigation.currentPanel;
+    console.log("currentPanel", currentPanel);
     if (currentPanel === "editSetting1") {
         state.edit.currentPanel = "editSetting2";
         navigate({ panel: "editSetting2" });

@@ -71,7 +71,7 @@ dialog{
   display:none;
 }
 .visibility-grid.active{
-  display:block;
+  display:grid;
 }
 
 

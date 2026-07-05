@@ -1,45 +1,37 @@
-import { searchCustom, getNextDate, upDateQuiz } from "./db.js";
-import { changeVisibility, navigate } from "./navigation.js";
-import { state, japaneseUnit, scienceUnit, mathUnit, otherUnit, EnglishUnit, socialStudiesUnit, japaneseWhere, socialStudiesWhere, mathWhere, scienceWhere, EnglishWhere, otherWhere, allMyProblemSets, renderQuizContentState, setQuizState } from "./state.js";
+import { getNextDate, searchCustom, upDateQuiz } from "./db.js";
+import { navigate } from "./navigation.js";
+import { allMyProblemSets, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, renderQuizContentState, scienceUnit, scienceWhere, setQuizState, socialStudiesUnit, socialStudiesWhere, state } from "./state.js";
 
 
 export function initQuiz() {
 
-    document.getElementById("customQuizesSubjectSelect").addEventListener("change", e => {
-        setQuizUnit();
-        setQuizWhere();
-        setQuizMyProblemSets();
+    document.getElementById("quizContentNext").addEventListener("click", e => {
+        document.getElementById("answer").classList.add("active");
+        document.getElementById("quizContentNext").classList.remove("active");
+        document.getElementById("quizContentInCorrent").classList.add("active");
+        document.getElementById("quizContentCorrent").classList.add("active");
     });
+
+
     document.getElementById("quizContentInCorrent").addEventListener("click", e => {/*結構あかんことしててすみません*/
-        const button = e.target.closest("[data-visibility]");
-        if (!button) return;
-
-
-
-        console.log(state.quizesList[state.currentQuizNumber]);
-        console.log(state.currentQuizNumber);
-        console.log(state.quizesList);
         let updateQuiz = structuredClone(state.quizesList[state.currentQuizNumber]);
         inCorrectQuiz(updateQuiz);
-        console.log(updateQuiz);
         state.currentQuizNumber = state.currentQuizNumber + 1;
-        console.log(state.quizesList.length + state.currentQuizNumber)
+
         if (state.quizesList.length === state.currentQuizNumber) {
             navigate({ panel: "result" });
-
         } else {
-            changeVisibility(button.dataset.visibility);
+            document.getElementById("answer").classList.remove("active");
+            document.getElementById("quizContentNext").classList.add("active");
+            document.getElementById("quizContentInCorrent").classList.remove("active");
+            document.getElementById("quizContentCorrent").classList.remove("active");
             startQuiz();
-
-
         }
 
     });
 
     document.getElementById("quizResultFinish").addEventListener("click", e => {/*結構あかんことしててすみません*/
         navigate({ page: "home", panel: "homeQuiz" })
-
-
     });
 
 }

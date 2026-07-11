@@ -1,6 +1,6 @@
-import { getNextDate, searchCustom, upDateQuiz } from "./db.js";
+import { getNextDate, searchCustom, searchHomework, upDateQuiz, getAllQuizes } from "./db.js";
 import { navigate } from "./navigation.js";
-import { allMyProblemSets, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, renderQuizContentState, scienceUnit, scienceWhere, setQuizState, socialStudiesUnit, socialStudiesWhere, state } from "./state.js";
+import { allMyProblemSets, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, renderQuizContentState, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state, allQuizes } from "./state.js";
 
 
 export function initQuiz() {
@@ -8,48 +8,93 @@ export function initQuiz() {
     document.getElementById("quizContentNext").addEventListener("click", e => {
         document.getElementById("answer").classList.add("active");
         document.getElementById("quizContentNext").classList.remove("active");
-        document.getElementById("quizContentInCorrent").classList.add("active");
-        document.getElementById("quizContentCorrent").classList.add("active");
+        document.getElementById("quizContentInCorrect").classList.add("active");
+        document.getElementById("quizContentCorrect").classList.add("active");
     });
 
 
-    document.getElementById("quizContentInCorrent").addEventListener("click", e => {/*結構あかんことしててすみません*/
-        let updateQuiz = structuredClone(state.quizesList[state.currentQuizNumber]);
+    document.getElementById("quizContentInCorrect").addEventListener("click", e => {/*結構あかんことしててすみません*/
+        let updateQuiz = structuredClone(state.quizesList[state.currentQuizNumber - 1]);
         inCorrectQuiz(updateQuiz);
-        state.currentQuizNumber = state.currentQuizNumber + 1;
 
         if (state.quizesList.length === state.currentQuizNumber) {
             navigate({ panel: "result" });
         } else {
-            document.getElementById("answer").classList.remove("active");
-            document.getElementById("quizContentNext").classList.add("active");
-            document.getElementById("quizContentInCorrent").classList.remove("active");
-            document.getElementById("quizContentCorrent").classList.remove("active");
-            startQuiz();
+            state.currentQuizNumber = state.currentQuizNumber + 1;
+            state.quiz.isAnswered = false;
+            renderQuiz();
+        }
+
+    });
+
+    document.getElementById("quizContentCorrect").addEventListener("click", e => {/*結構あかんことしててすみません*/
+        let updateQuiz = structuredClone(state.quizesList[state.currentQuizNumber - 1]);
+        correctQuiz(updateQuiz);
+
+        if (state.quizesList.length === state.currentQuizNumber) {
+            navigate({ panel: "result" });
+        } else {
+            state.currentQuizNumber = state.currentQuizNumber + 1;
+            state.quiz.isAnswered = false;
+            renderQuiz();
         }
 
     });
 
     document.getElementById("quizResultFinish").addEventListener("click", e => {/*結構あかんことしててすみません*/
-        navigate({ page: "home", panel: "homeQuiz" })
+        navigate({ page: "home", panel: "homeQuiz" });
+    });
+
+    document.getElementById("quizContentBottombarToggle").addEventListener("click", e => {
+        document.getElementById("quizContentBottombarToggle").classList.remove("active");
     });
 
 }
 
-export function setQuiz() {
-    const mode = document.querySelector("#homeworkCustomChips .chipButton.is-selected").dataset.value;
-    if (mode === "custom") {
-        state.quiz.mode = "custom";
-        setQuizCustom();
-        console.log(getCustomQuizesList());
-        state.quizesList = shuffle(getCustomQuizesList());
-        console.log(state.quizesList);
+
+
+
+
+
+
+export function getCustomQuizesList() {/*state.Customからquizの配列を作る */
+    return searchCustom(state.searchCustomState.book,
+        state.searchCustomState.unit,
+        state.searchCustomState.myProblemSets,
+        state.searchCustomState.subject,
+        state.searchCustomState.number)
+
+}
+
+export function getHomeworkQuizesList() {/*state.Customからquizの配列を作る */
+    return searchHomework(state.searchHomeworkState.isDelinquent,
+        state.searchHomeworkState.isToday)
+
+}
+
+export function startQuiz() {
+    state.currentQuizNumber = 0;
+    state.isAnswered = false;
+    if (state.customOrHomework === "custom") {
+        if (getCustomQuizesList()) {
+            state.quizesList = shuffle(getCustomQuizesList());
+            showQuiz();
+            navigate({ page: "quiz", panel: "quizContent" });
+
+        } else {
+            alert("該当するクイズがありません")
+        }
     } else {
-        state.quiz.mode = "homework";
-        setQuizHomework();
+        if (getHomeworkQuizesList()) {
+            state.quizesList = shuffle(getHomeworkQuizesList());
+            showQuiz();
+            navigate({ page: "quiz", panel: "quizContent" });
+        }
+        else {
+            alert("該当するクイズがありません")
+        }
+
     }
-
-
 
 }
 
@@ -65,142 +110,95 @@ function shuffle(array) {
     return result;
 }
 
-function setQuizCustom() {
-    state.searchCustomState.book = document.getElementById("customQuizesWhereSelect").value;
-    state.searchCustomState.myProblemSets = document.getElementById("customQuizesMyProblemSetsSelect").value;
-    state.searchCustomState.number = document.getElementById("customQuizesNumberSelect").value;
-    state.searchCustomState.subject = document.getElementById("customQuizesSubjectSelect").value;
-    state.searchCustomState.unit = document.getElementById("customQuizesUnitSelect").value;
-    state.searchCustomState.isCheckedOnly = document.getElementById("onlyCheckCheckbox").checked;
-    state.searchCustomState.missKindVisibility = document.getElementById("missKindCheckbox").checked;
-}
-function setQuizHomework() {
-    state.searchHomeworkState.number = document.getElementById("customQuizesNumberSelect").value;
-    state.searchHomeworkState.isCheckedOnly = document.getElementById("onlyCheckCheckbox").checked;
-    state.searchHomeworkState.missKindVisibility = document.getElementById("missKindCheckbox").checked;
-    state.searchHomeworkState.isToday = document.getElementById("todayCheckbox").checked;
-    state.searchHomeworkState.isDelinquent = document.getElementById("deliquentCheckbox").checked;
-}
-
-export function setQuizUnit() {
-    const subject = document.getElementById("customQuizesSubjectSelect").value;
-    let units = null;
-    console.log(subject);
-    switch (subject) {
-        case "japanese":
-            units = japaneseUnit.map(u => u.unit);
-            console.log(units);
-            break;
-
-        case "socialStudies":
-            units = socialStudiesUnit.map(u => u.unit);
-            break;
-
-        case "math":
-            units = mathUnit.map(u => u.unit);
-            break;
-
-        case "science":
-            units = scienceUnit.map(u => u.unit);
-            break;
-
-        case "English":
-            units = EnglishUnit.map(u => u.unit);
-            break;
 
 
-        case "other":
-            units = otherUnit.map(u => u.unit);
-            break;
-    }
-    document.getElementById("customQuizesUnitSelect").innerHTML = units
-        .map(word => `<option value="${word}">` + word)
-        .join("");
-}
-
-export function setQuizWhere() {
-    const subject = document.getElementById("customQuizesSubjectSelect").value;
-    let wheres = null;
-    console.log(subject);
-    switch (subject) {
-        case "japanese":
-            wheres = japaneseWhere.map(u => u.where);
-            console.log(wheres);
-            break;
-
-        case "socialStudies":
-            wheres = socialStudiesWhere.map(u => u.where);
-            break;
-
-        case "math":
-            wheres = mathWhere.map(u => u.where);
-            break;
-
-        case "science":
-            wheres = scienceWhere.map(u => u.where);
-            break;
-
-        case "English":
-            wheres = EnglishWhere.map(u => u.where);
-            break;
-
-
-        case "other":
-            wheres = otherWhere.map(u => u.where);
-            break;
-    }
-
-    console.log(wheres);
-    document.getElementById("customQuizesWhereSelect").innerHTML = wheres
-        .map(word => `<option value="${word}">` + word)
-        .join("");
-}
-
-export function setQuizMyProblemSets() {
-    let myProblemSetses = null;
-    myProblemSetses = allMyProblemSets.map(u => u.myProblemSets);
-    document.getElementById("customQuizesMyProblemSetsSelect").innerHTML = myProblemSetses
-        .map(word => `<option value="${word}">` + word)
-        .join("");
-}
-
-
-
-export function getCustomQuizesList() {/*state.Customからquizの配列を作る */
-    return searchCustom(state.searchCustomState.book,
-        state.searchCustomState.unit,
-        state.searchCustomState.myProblemSets,
-        state.searchCustomState.subject,
-        state.searchCustomState.number)
-
-}
-
-export function startQuiz() {
-    setQuizState(state.quizesList[state.currentQuizNumber]);
-    renderQuizContentState();
+export function showQuiz() {
+    state.currentQuizNumber = state.currentQuizNumber + 1;
+    console.log(state.quizesList);
+    console.log(state.currentQuizNumber);
+    setQuizState(state.quizesList[state.currentQuizNumber - 1]);
+    document.getElementById("quizContentBottombarToggle").classList.add("active");
     state.quizStartTime = Date.now();
 }
 
+export function setQuizState(question) {
+    console.log(question);
+
+    state.quiz.currentQuestionId = question.id;
+    state.quiz.mode = question.mode;
+    state.quiz.subject = question.subject;
+    state.quiz.unit = question.unit;
+    state.quiz.where = question.where;
+    state.quiz.importance = question.importance;
+    state.quiz.question = question.question;
+    state.quiz.answer = question.answer;
+    state.quiz.myAnswer = question.myAnswer;
+    state.quiz.missKind = question.missKind;
+    state.quiz.lesson = question.lesson;
+    state.quiz.myProblemSets = question.myProblemSets;
+    state.quiz.nextDate = question.nextDate;
+    state.quiz.times = question.times;
+    state.quiz.correctTimes = question.correctTimes;
+    state.quiz.seconds = 0;
+    state.quiz.secondsRecord = question.seconds;
+    state.quiz.isCompleted = question.isCompleted;
+    state.quiz.progress = question.progress;
+    state.quiz.formerDate = question.formerDate;
+    state.quiz.isChecked = question.isChecked;
+    state.quiz.makeDate = question.makeDate;
+    state.quiz.quizMode = question.mode;
+}
+
+export function showAnswer() {
+    state.timeMs = Date.now() - state.quizStartTime;
+    state.quiz.isAnswered = true;
+
+}
+
+
 // ---- Render functions ----
 export function renderQuiz() {
-    setQuiz();
-    console.log("quiz");
-    state.currentQuizNumber = 0;
-    startQuiz();
+    document.getElementById("quizContentWhere").textContent = state.quiz.where;
+    if (state.quiz.importance >= 1) { document.getElementById("quizContentImportance1").classList.add("active"); }
+    if (state.quiz.importance < 2) { document.getElementById("quizContentImportance2").classList.remove("active"); }
+    if (state.quiz.importance >= 2) { document.getElementById("quizContentImportance2").classList.add("active"); }
+    if (state.quiz.importance < 3) { document.getElementById("quizContentImportance3").classList.remove("active"); }
+    if (state.quiz.importance >= 3) { document.getElementById("quizContentImportance3").classList.add("active"); }
+    if (state.quiz.importance < 4) { document.getElementById("quizContentImportance4").classList.remove("active"); }
+    if (state.quiz.importance >= 4) { document.getElementById("quizContentImportance4").classList.add("active"); }
+    document.getElementById("quizContentQuestion").textContent = state.quiz.question;
+    document.getElementById("quizContentAnswer").textContent = state.quiz.answer;
+    if (state.quiz.quizMode === "miss") {
+        document.getElementById("quizContentMyAnswer").textContent = state.quiz.myAnswer;
+    } else {
+        document.getElementById("quizContentMyAnswer").textContent = "";
+    }
+    if (state.missKindVisibility === false) {//trueのときだけ表示しない
+        document.getElementById("quizContentMissKind").textContent = state.quiz.missKind;
+    } else {
+        document.getElementById("quizContentMissKind").textContent = "";
+    }
+    console.log(state.quiz.times);
+    document.getElementById("quizContentCurrentPercent").textContent = Math.round(state.quiz.correctTimes / state.quiz.times * 100) + "%";
+    document.getElementById("quizContentSeconds").textContent = state.quiz.secondsRecord + "秒";
+    document.getElementById("quizContentLesson1").textContent = state.quiz.lesson;
+    document.getElementById("quizContentLesson2").textContent = state.quiz.lesson;
+    if (state.quiz.isAnswered) {
+        document.getElementById("answer").classList.add("active");
+        document.getElementById("quizContentNext").classList.remove("active");
+        document.getElementById("quizContentInCorrect").classList.add("active");
+        document.getElementById("quizContentCorrect").classList.add("active");
+
+    } else {
+        document.getElementById("answer").classList.remove("active");
+        document.getElementById("quizContentNext").classList.add("active");
+        document.getElementById("quizContentInCorrect").classList.remove("active");
+        document.getElementById("quizContentCorrect").classList.remove("active");
+    }
 }
 
-export function renderHomeQuiz() {
-    setQuizUnit();
-    setQuizWhere();
-    setQuizMyProblemSets();
-}
 
-export function renderQuizContent() {
-}
 
-export function renderResult() {
-
-}
 
 async function inCorrectQuiz(quiz) {
     quiz.formerDate = Date.now();
@@ -214,15 +212,20 @@ async function inCorrectQuiz(quiz) {
 }
 
 async function correctQuiz(quiz) {
-    const timeMs = Date.now() - state.quizStartTime;
-    quiz.seconds = Math.floor(timeMs / 1000);
+    quiz.seconds = Math.floor(state.timeMs / 1000);
+    console.log(quiz.seconds);
     quiz.formerDate = Date.now();
     quiz.times = quiz.times + 1;
     quiz.correctTimes = quiz.correctTimes + 1;
     quiz.progress = quiz.progress + 1;
     quiz.nextDate = getNextDate(quiz.importance, quiz.progress, quiz.formerDate);
     console.log(quiz);
+
+    if (quiz.secondsRecord == null || quiz.seconds < quiz.secondsRecord) {
+        quiz.secondsRecord = quiz.seconds;
+    }
     await upDateQuiz(quiz);
+    allQuizes = await getAllQuizes();
 
 
 }

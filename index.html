@@ -110,7 +110,8 @@
             class="button chipButton homeworkCustomChip transition hover-chip u-text-sm">カスタム</button>
         </div>
         <div id="delinquentToday" class="visibility-grid grid-1-1 gap-40-20">
-          <label class="text u-text-lg text-bold"><input id="delinquentCheckbox" type="checkbox"
+          <label class="text u-text-lg text-bold">
+            <input id="delinquentCheckbox" type="checkbox"
               class="checkBox">滞納</label>
           <div id="delinquent" class="horizontalContainer">
             <h3 id="delinquentNumber" class="numberOfQuizes"></h3>
@@ -259,9 +260,9 @@
         <p id="quizContentSettingAnswerLabel" class="text u-text-lg text-bold">答え</p>
         <textarea oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"
           id="quizContentSettingAnswerText" class="content textarea"></textarea>
-        <p id="quizContentSettingMyAnswerLabel" class="text u-text-lg text-bold">自分の答え</p>
+        <p id="quizContentSettingMyAnswerLabel" class="text u-text-lg text-bold visibility-block">自分の答え</p>
         <textarea oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';"
-          id="quizContentSettingMyAnswerText" class="content textarea"></textarea>
+          id="quizContentSettingMyAnswerText" class="content textarea visibility-block"></textarea>
       </div>
       <button id="nextButton3" data-panel="editSetting4"
         class="material-symbols-outlined button nextButton fixed right-25 bottom-25 transition hover-scale active-scale">arrow_right_alt</button>
@@ -349,7 +350,7 @@
               <p id="quizContentLesson1" class="text u-text-md text-bold wrap"></p>
             </div>
             <button id="quizContentBottombarToggle"
-              class="button missKindCoverButton absolute left-25 bottom-0 right-0 top-0 z transition hover-scale active-scale"
+              class="button visibility-block absolute left-25 bottom-0 right-0 top-0 z transition hover-scale active-scale"
               type="button" aria-label="ミスの詳細を表示">
             </button>
           </div>
@@ -383,9 +384,9 @@
           class="button bottombarNormalButton u-text-xl flex-1 transition hover-scale active-scale">My問題集</button>
         <button id="quizContentNext" data-visibility="quizContentNextVisibility"
           class="material-symbols-outlined button bottombarIconButton u-text-xxl transition hover-scale active-scale visibility-block quizContentNextVisibility quizContentCheckVisibility active">arrow_right_alt</button>
-        <button id="quizContentInCorrent" data-visibility="quizContentCheckVisibility"
+        <button id="quizContentInCorrect" data-visibility="quizContentCheckVisibility"
           class="quizContentCheckVisibility material-symbols-outlined button bottombarIconButton u-text-xxl transition hover-scale active-scale visibility-block quizContentNextVisibility">close</button>
-        <button id="quizContentCorrent" data-visibility="quizContentCheckVisibility"
+        <button id="quizContentCorrect" data-visibility="quizContentCheckVisibility"
           class="material-symbols-outlined button bottombarIconButton u-text-xxl transition hover-scale active-scale visibility-block quizContentNextVisibility quizContentCheckVisibility">radio_button_unchecked</button>
       </div>
 

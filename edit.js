@@ -36,22 +36,24 @@ export function initEdit() {
     });
 
     document.getElementById("nextButton1").addEventListener("click", e => {
-        navigateToNextEditPanel();
-        renderEditSetting2();
+        editNormalize1();
+        if (editValidate1()) {
+            navigateToNextEditPanel();
+        }
     });
 
     document.getElementById("quizNumberSettingPageText").addEventListener("input", e => {
-        state.edit.page = e.target.value;
+        state.edit.page = Number(e.target.value);
         renderEditSetting2();
     });
 
     document.getElementById("quizNumberSettingQuizNumberAText").addEventListener("input", e => {
-        state.edit.numberA = e.target.value;
+        state.edit.numberA = Number(e.target.value);
         renderEditSetting2();
     });
 
     document.getElementById("quizNumberSettingQuizNumberBText").addEventListener("input", e => {
-        state.edit.numberB = e.target.value;
+        state.edit.numberB = Number(e.target.value);
         renderEditSetting2();
     });
 
@@ -81,8 +83,10 @@ export function initEdit() {
         });
 
     document.getElementById("nextButton2").addEventListener("click", e => {
-        navigateToNextEditPanel();
-        renderEditSetting3();
+        editNormalize2();
+        if (editValidate2()) {
+            navigateToNextEditPanel();
+        }
     });
 
     document.getElementById("quizContentSettingQuizText").addEventListener("input", e => {
@@ -101,8 +105,10 @@ export function initEdit() {
     });
 
     document.getElementById("nextButton3").addEventListener("click", e => {
-        navigateToNextEditPanel();
-        renderEditSetting4();
+        editNormalize3();
+        if (editValidate3()) {
+            navigateToNextEditPanel();
+        }
     });
 
     document.getElementById("quizMissSettingMissKindSelect").addEventListener("change", e => {
@@ -116,8 +122,10 @@ export function initEdit() {
     });
 
     document.getElementById("nextButton4").addEventListener("click", e => {
-        navigateToNextEditPanel();
-        renderEditSetting5();
+        editNormalize4();
+        if (editValidate4()) {
+            navigateToNextEditPanel();
+        }
     });
 
 
@@ -163,7 +171,7 @@ export function renderEditSetting1() {
 
         });
 
-    
+
     document.getElementById("otherSettingSubjectSelect").value = state.edit.subject;
     document.getElementById("otherSettingUnitSelect").value = state.edit.unit;
     document.getElementById("otherSettingWhereSelect").value = state.edit.book;
@@ -171,6 +179,7 @@ export function renderEditSetting1() {
 }
 
 export function renderEditSetting2() {
+
     document.getElementById("quizNumberSettingPageText").value = state.edit.page;
     document.getElementById("quizNumberSettingQuizNumberAText").value = state.edit.numberA;
     document.getElementById("quizNumberSettingQuizNumberBText").value = state.edit.numberB;
@@ -207,7 +216,14 @@ export function renderEditSetting2() {
 export function renderEditSetting3() {
     document.getElementById("quizContentSettingQuizText").value = state.edit.question;
     document.getElementById("quizContentSettingAnswerText").value = state.edit.answer;
-    document.getElementById("quizContentSettingMyAnswerText").value = state.edit.myAnswer;
+    if(state.edit.mode === "miss"){
+        document.getElementById("quizContentSettingMyAnswerText").classList.add("active");
+        document.getElementById("quizContentSettingMyAnswerLabel").classList.add("active");
+    } else {
+        document.getElementById("quizContentSettingMyAnswerText").classList.remove("active");
+        document.getElementById("quizContentSettingMyAnswerLabel").classList.remove("active");
+        console.log(state.edit.mode);
+    }
 }
 
 export function renderEditSetting4() {
@@ -296,7 +312,7 @@ export function setEditUnit() {
             units = scienceUnit.map(u => u.unit);
             break;
 
-        case "nglish":
+        case "English":
             units = EnglishUnit.map(u => u.unit);
             break;
 
@@ -363,8 +379,13 @@ function navigateToNextEditPanel() {
         state.edit.currentPanel = "editSetting3";
         navigate({ panel: "editSetting3" });
     } else if (currentPanel === "editSetting3") {
-        state.edit.currentPanel = "editSetting4";
-        navigate({ panel: "editSetting4" });
+        if (state.edit.mode === "miss") {
+            state.edit.currentPanel = "editSetting4";
+            navigate({ panel: "editSetting4" });
+        } else {
+            state.edit.currentPanel = "editSetting5";
+            navigate({ panel: "editSetting5" });
+        }
     } else if (currentPanel === "editSetting4") {
         state.edit.currentPanel = "editSetting5";
         navigate({ panel: "editSetting5" });
@@ -372,4 +393,95 @@ function navigateToNextEditPanel() {
         state.edit.currentPanel = null;
         navigate({ page: "home", panel: "homeEdit" });
     }
+}
+function editNormalize1() {
+    state.edit.subject = state.edit.subject.trim();
+    state.edit.unit = state.edit.unit.trim();
+    if (!state.edit.unit) {
+        state.edit.unit = "指定なし";
+    }
+    state.edit.book = state.edit.book.trim();
+    if (!state.edit.book) {
+        state.edit.book = "指定なし";
+    }
+}
+
+function editNormalize2() {
+    if (!state.edit.page) {
+        state.edit.page = 0;
+    }
+    if (!state.edit.numberA) {
+        state.edit.numberA = 0;
+    }
+    if (!state.edit.numberB) {
+        state.edit.numberB = 0;
+    }
+}
+
+function editNormalize3() {
+    state.edit.question = state.edit.question.trim();
+    state.edit.answer = state.edit.answer.trim();
+    state.edit.myAnswer = state.edit.myAnswer.trim();
+    if (!state.mode === "miss") {
+        state.edit.myAnswer = "no answer";
+    }
+}
+
+function editNormalize4() {
+    state.edit.missKind = state.edit.missKind.trim();
+    if (!state.edit.missKind) {
+        state.edit.missKind = "指定なし";
+    }
+    state.edit.lesson = state.edit.lesson.trim();
+    if (!state.edit.lesson) {
+        state.edit.lesson = "指定なし";
+    }
+}
+
+function editValidate1() {
+    if (state.edit.subject === "") {
+        alert("教科を選択してください");
+        return false;
+    }
+    return true;
+}
+
+function editValidate2() {
+    if (state.edit.page < 0 || !Number.isInteger(state.edit.page)) {
+        alert("ページ数は正の整数で入力してください");
+        return false;
+    }
+    if (state.edit.numberA < 0 || !Number.isInteger(state.edit.numberA)) {
+        alert("数値Aは正の整数で入力してください");
+        return false;
+    }
+    if (state.edit.numberB < 0 || !Number.isInteger(state.edit.numberB)) {
+        alert("数値Bは正の整数で入力してください");
+        return false;
+    }
+    if (state.edit.importance < 1) {
+        alert("重要度は1以上で入力してください");
+        return false;
+    }
+    return true;
+}
+
+function editValidate3() {
+    if (!state.edit.question) {
+        alert("問題文を入力してください");
+        return false;
+    }
+    if (!state.edit.answer) {
+        alert("答えを入力してください");
+        return false;
+    }
+    if (state.edit.mode === "miss" && !state.edit.myAnswer) {
+        alert("自分の答えを入力してください");
+        return false;
+    }
+    return true;
+}
+
+function editValidate4() {
+    return true;
 }

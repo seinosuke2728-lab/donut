@@ -170,7 +170,6 @@ dialog{
 }
 .textarea{
   border-radius: 8px;
-  font-size: 20px;
 }
 
 .quizEditTextBox{
@@ -207,6 +206,12 @@ dialog{
 .sidebarButton.is-selected{
   background: var(--yellow-color);
   color: var(--cream-color);
+}
+
+.sidebarButton.is-selected:hover{
+  background: var(--yellow-color);
+  color: var(--cream-color);
+
 }
 
 .topbar{
@@ -272,7 +277,7 @@ color: var(--darkBrowne-color);
   padding-right: 25%
 }
 
-.missKindCoverButton{
+#quizContentBottombarToggle{
   position: absolute;
   border-radius: 8px;
   background: var(--darkBrowne-color);
@@ -283,9 +288,6 @@ color: var(--darkBrowne-color);
   color: var(--yellow-color);
 }
 
-.missKindDetail.is-revealed .missKindCoverButton{
-  display: none;
-}
 
 .star{
   width: 40px;

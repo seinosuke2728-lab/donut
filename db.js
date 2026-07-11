@@ -1,12 +1,10 @@
-import { allQuizes, allUnit, setAll, allWhere ,allMyProblemSets, classifyAll} from "./state.js";
+import { allQuizes, allUnit, setAll, allWhere, allMyProblemSets, classifyAll } from "./state.js";
 
 const today = new Date();
 let db;
 let request;
 const cDialog = document.getElementById("continueDialog");
 const mDialog = document.getElementById("myProblemSetsDialog");
-const missKindDetail = document.getElementById("quizContentMissKindDetail");
-const missKindDetailToggle = document.getElementById("quizContentBottombarToggle");
 
 cDialog.addEventListener("click", (e) => {
     const rect = cDialog.getBoundingClientRect();
@@ -36,9 +34,6 @@ mDialog.addEventListener("click", (e) => {
     }
 });
 
-missKindDetailToggle.addEventListener("click", () => {
-    missKindDetail.classList.add("is-revealed");
-});
 
 class Question {
     question;
@@ -53,7 +48,7 @@ class Question {
     nextDate;
     mode;
     times;
-    correntTimes;
+    correctTimes;
     subject;
     unit;
     missKind;
@@ -77,8 +72,8 @@ class MyProblemSets {
 }
 
 export async function initDB() {
-    await deleteDb();
-    
+
+    deleteDb();
     await open();
 
     await setAll();
@@ -109,7 +104,7 @@ export async function save(state) {
     });
 }
 
-export async function upDateQuiz(quiz){
+export async function upDateQuiz(quiz) {
     const tx = db.transaction("quizes", "readwrite");
 
     const store = tx.objectStore("quizes");
@@ -126,7 +121,7 @@ export async function upDateQuiz(quiz){
         };
 
     });
-    
+
 }
 
 export async function addUnit(subject, unit) {
@@ -302,24 +297,63 @@ export async function getAllMyProblemSets() {
 
 export function searchCustom(where, unit, myProblemSets, subject, number) {
     console.log(allQuizes);
-    console.log(where+unit+myProblemSets+subject+number);
+    console.log(where + unit + myProblemSets + subject + number);
     let filtered = null;
     if (subject) {
         filtered = allQuizes.filter(quiz => quiz.subject === subject);
     }
+    if(!filtered || filtered.length === 0){
+        return false;
+    }
     if (unit) {
         filtered = filtered.filter(quiz => quiz.unit === unit);
+    }
+    if(!filtered || filtered.length === 0){
+        return false;
     }
     console.log(filtered);
     if (where) {
         filtered = filtered.filter(quiz => quiz.book === where);
+    }
+    if(!filtered || filtered.length === 0){
+        return false;
     }
     console.log(filtered);
     if (myProblemSets) {
         filtered = filtered.filter(quiz => {
             console.log(quiz.myProblemSets);
             console.log(myProblemSets);
-            return quiz.myProblemSets.includes(myProblemSets)});
+            return quiz.myProblemSets.includes(myProblemSets)
+        });
+    }
+    console.log(filtered);
+    if (where) {
+        filtered = filtered.filter(quiz => quiz.book === where);
+    }
+    if(!filtered || filtered.length === 0){
+        return false;
+    }
+
+    const result = filtered.slice(0, number);
+    console.log(result);
+    return result;
+}
+
+
+
+export function searchHomework(isDelinquent, isToday) {
+    let filtered = null;
+    if (isDelinquent) {
+        filtered = allQuizes.filter(quiz => quiz.nextDate.setHours(0,0,0,0) - state.today === 0);
+    }
+    if(!filtered || filtered.length === 0){
+        return false;
+    }
+    if (isToday) {
+        filtered = filtered.filter(quiz => quiz.nextDate.setHours(0,0,0,0) - state.today < 0);
+    }
+    if(!filtered || filtered.length === 0){
+        return false;
     }
 
     const result = filtered.slice(0, number);
@@ -352,7 +386,7 @@ function setQuizFromState(editState) {
     if (editState.editingQuestionId === null) {
         question.question = editState.question;
         question.answer = editState.answer;
-        question.correntTimes = 0;
+        question.correctTimes = 0;
         question.formerDate = Date.now();
         question.importance = editState.importance;
         question.isChecked = false;
@@ -369,8 +403,8 @@ function setQuizFromState(editState) {
         question.subject = editState.subject;
         question.times = 0;
         question.unit = editState.unit;
-        question.where = editState.book + editState.page + editState.number;
-        question.book=editState.book;
+        question.where = editState.book + String(editState.page) + "P" + " " + String(editState.numberA) + "-" + String(editState.numberB);
+        question.book = editState.book;
     }
     return question;
 }

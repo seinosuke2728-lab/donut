@@ -1,5 +1,6 @@
 import { renderEditSetting1, renderEditSetting2, renderEditSetting3, renderEditSetting4, renderEditSetting5 } from "./edit.js";
-import { renderHomeQuiz, renderQuiz, renderQuizContent, renderResult } from "./quiz.js";
+import { renderHome } from "./home.js";
+import { renderQuiz } from "./quiz.js";
 import { state } from "./state.js";
 
 
@@ -55,16 +56,16 @@ const pages = {
 
 const panels = {
     homeEdit: {
-        //onShow: renderHomeEdit
+        onShow: renderHome
     },
     homeQuiz: {
-        onShow: renderHomeQuiz
+        onShow: renderHome
     },
     homeLog: {
-        //onShow: renderHomeLog
+        onShow: renderHome
     },
     homeSetting: {
-        //onShow: renderHomeSetting
+        onShow: renderHome
     },
     editSetting1: {
         onShow: renderEditSetting1
@@ -82,10 +83,10 @@ const panels = {
         onShow: renderEditSetting5
     },
     quizContent: {
-        onShow: renderQuizContent
+        //onShow: renderQuizContent
     },
     result: {
-        onShow: renderResult
+        //onShow: renderResult
     }
 };
 

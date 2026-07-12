@@ -296,46 +296,46 @@ export async function getAllMyProblemSets() {
 
 
 export function searchCustom(where, unit, myProblemSets, subject, number) {
-    console.log(allQuizes);
-    console.log(where + unit + myProblemSets + subject + number);
     let filtered = null;
     if (subject) {
         filtered = allQuizes.filter(quiz => quiz.subject === subject);
     }
-    if(!filtered || filtered.length === 0){
+    if (!filtered || filtered.length === 0) {
         return false;
     }
     if (unit) {
-        filtered = filtered.filter(quiz => quiz.unit === unit);
+        if (!unit === "指定なし") {
+            filtered = filtered.filter(quiz => quiz.unit === unit);
+
+        }
     }
-    if(!filtered || filtered.length === 0){
+    if (!filtered || filtered.length === 0) {
         return false;
     }
-    console.log(filtered);
     if (where) {
-        filtered = filtered.filter(quiz => quiz.book === where);
+        if (!where === "指定なし") {
+            filtered = filtered.filter(quiz => quiz.book === where);
+        }
     }
-    if(!filtered || filtered.length === 0){
+    if (!filtered || filtered.length === 0) {
         return false;
     }
-    console.log(filtered);
     if (myProblemSets) {
-        filtered = filtered.filter(quiz => {
-            console.log(quiz.myProblemSets);
-            console.log(myProblemSets);
-            return quiz.myProblemSets.includes(myProblemSets)
-        });
+        if (!myProblemSets === "指定なし") {
+            filtered = filtered.filter(quiz => {
+                return quiz.myProblemSets.includes(myProblemSets)
+            });
+
+        }
     }
-    console.log(filtered);
     if (where) {
         filtered = filtered.filter(quiz => quiz.book === where);
     }
-    if(!filtered || filtered.length === 0){
+    if (!filtered || filtered.length === 0) {
         return false;
     }
 
     const result = filtered.slice(0, number);
-    console.log(result);
     return result;
 }
 
@@ -344,20 +344,19 @@ export function searchCustom(where, unit, myProblemSets, subject, number) {
 export function searchHomework(isDelinquent, isToday) {
     let filtered = null;
     if (isDelinquent) {
-        filtered = allQuizes.filter(quiz => quiz.nextDate.setHours(0,0,0,0) - state.today === 0);
+        filtered = allQuizes.filter(quiz => quiz.nextDate.setHours(0, 0, 0, 0) - state.today === 0);
     }
-    if(!filtered || filtered.length === 0){
+    if (!filtered || filtered.length === 0) {
         return false;
     }
     if (isToday) {
-        filtered = filtered.filter(quiz => quiz.nextDate.setHours(0,0,0,0) - state.today < 0);
+        filtered = filtered.filter(quiz => quiz.nextDate.setHours(0, 0, 0, 0) - state.today < 0);
     }
-    if(!filtered || filtered.length === 0){
+    if (!filtered || filtered.length === 0) {
         return false;
     }
 
     const result = filtered.slice(0, number);
-    console.log(result);
     return result;
 }
 

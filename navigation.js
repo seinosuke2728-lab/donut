@@ -6,7 +6,6 @@ import { state } from "./state.js";
 
 export function navigate({ page, panel } = {}) {
 
-    console.trace("navigate", page, panel);
 
     // ---- PAGE切替 ----
     if (page) {

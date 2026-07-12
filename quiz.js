@@ -1,6 +1,6 @@
 import { getNextDate, searchCustom, searchHomework, upDateQuiz, getAllQuizes } from "./db.js";
 import { navigate } from "./navigation.js";
-import { allMyProblemSets, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, renderQuizContentState, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state, allQuizes } from "./state.js";
+import { allMyProblemSets, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, renderQuizContentState, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state, allQuizes, roadQuizes } from "./state.js";
 
 
 export function initQuiz() {
@@ -114,16 +114,12 @@ function shuffle(array) {
 
 export function showQuiz() {
     state.currentQuizNumber = state.currentQuizNumber + 1;
-    console.log(state.quizesList);
-    console.log(state.currentQuizNumber);
     setQuizState(state.quizesList[state.currentQuizNumber - 1]);
     document.getElementById("quizContentBottombarToggle").classList.add("active");
     state.quizStartTime = Date.now();
 }
 
 export function setQuizState(question) {
-    console.log(question);
-
     state.quiz.currentQuestionId = question.id;
     state.quiz.mode = question.mode;
     state.quiz.subject = question.subject;
@@ -178,9 +174,16 @@ export function renderQuiz() {
     } else {
         document.getElementById("quizContentMissKind").textContent = "";
     }
-    console.log(state.quiz.times);
-    document.getElementById("quizContentCurrentPercent").textContent = Math.round(state.quiz.correctTimes / state.quiz.times * 100) + "%";
-    document.getElementById("quizContentSeconds").textContent = state.quiz.secondsRecord + "秒";
+    if (!state.quiz.times) {
+        document.getElementById("quizContentCurrentPercent").textContent = Math.round(state.quiz.correctTimes / state.quiz.times * 100) + "%";
+    }else{
+        document.getElementById("quizContentCurrentPercent").textContent = "New Quiz!";
+    }
+    if(!state.quiz.secondsRecord){
+        document.getElementById("quizContentSeconds").textContent = state.quiz.secondsRecord + "秒";
+    }else{
+        document.getElementById("quizContentSeconds").textContent = "";
+    }
     document.getElementById("quizContentLesson1").textContent = state.quiz.lesson;
     document.getElementById("quizContentLesson2").textContent = state.quiz.lesson;
     if (state.quiz.isAnswered) {
@@ -213,19 +216,17 @@ async function inCorrectQuiz(quiz) {
 
 async function correctQuiz(quiz) {
     quiz.seconds = Math.floor(state.timeMs / 1000);
-    console.log(quiz.seconds);
     quiz.formerDate = Date.now();
     quiz.times = quiz.times + 1;
     quiz.correctTimes = quiz.correctTimes + 1;
     quiz.progress = quiz.progress + 1;
     quiz.nextDate = getNextDate(quiz.importance, quiz.progress, quiz.formerDate);
-    console.log(quiz);
 
     if (quiz.secondsRecord == null || quiz.seconds < quiz.secondsRecord) {
         quiz.secondsRecord = quiz.seconds;
     }
     await upDateQuiz(quiz);
-    allQuizes = await getAllQuizes();
+    await roadQuizes();
 
 
 }

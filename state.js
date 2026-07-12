@@ -118,6 +118,10 @@ export async function saveState(state) {
   alert(allQuizes.length);
 }
 
+export async function roadQuizes(){
+  allQuizes = await getAllQuizes();
+}
+
 export async function saveUnit(subject, unit) {
   await addUnit(subject, unit);
   allUnit = await getAllUnit();

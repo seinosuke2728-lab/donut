@@ -1,6 +1,6 @@
 import { navigate } from "./navigation.js";
 import { startQuiz } from "./quiz.js";
-import { allMyProblemSets, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state } from "./state.js";
+import { allMyProblemSets, allUnit, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state } from "./state.js";
 
 export function initHome() {
     document.getElementById("homeSidebarEdit").addEventListener("click", e => {
@@ -10,6 +10,7 @@ export function initHome() {
     document.getElementById("homeSidebarQuiz").addEventListener("click", e => {
         state.homeMode = "quiz";
         navigate({ page: "home", panel: "homeQuiz" });
+        onShowHomeQuiz();
     });
     document.getElementById("homeSidebarLog").addEventListener("click", e => {
         state.homeMode = "log";
@@ -58,7 +59,6 @@ export function initHome() {
             state.searchCustomState.subject = e.target.value;
             setQuizUnit();
             setQuizWhere();
-            setQuizMyProblemSets();
             renderHomeQuiz();
         }
     });
@@ -95,7 +95,6 @@ export function initHome() {
     });
 
     document.getElementById("nextButton").addEventListener("click", e => {
-        console.log("nextButton clicked");
         const today=new Date();
         state.today=today.setHours(0,0,0,0);
         if (state.customOrHomework === "homework") {
@@ -171,9 +170,6 @@ function renderHomeQuiz() {
         document.getElementById("delinquentToday").classList.remove("active");
         document.getElementById("customQuizes").classList.add("active");
     }
-    setQuizUnit();
-    setQuizWhere();
-    setQuizMyProblemSets();
 
 
 }
@@ -182,11 +178,9 @@ function renderHomeQuiz() {
 export function setQuizUnit() {
     const subject = document.getElementById("customQuizesSubjectSelect").value;
     let units = null;
-    console.log(subject);
     switch (subject) {
         case "japanese":
             units = japaneseUnit.map(u => u.unit);
-            console.log(units);
             break;
 
         case "socialStudies":
@@ -210,7 +204,9 @@ export function setQuizUnit() {
             units = otherUnit.map(u => u.unit);
             break;
     }
-    document.getElementById("customQuizesUnitSelect").innerHTML = units
+    console.log(japaneseUnit);
+    console.log(allUnit);
+    document.getElementById("customQuizesUnitSelect").innerHTML = '<option value="指定なし">指定なし'+units
         .map(word => `<option value="${word}">` + word)
         .join("");
 }
@@ -218,11 +214,9 @@ export function setQuizUnit() {
 export function setQuizWhere() {
     const subject = document.getElementById("customQuizesSubjectSelect").value;
     let wheres = null;
-    console.log(subject);
     switch (subject) {
         case "japanese":
             wheres = japaneseWhere.map(u => u.where);
-            console.log(wheres);
             break;
 
         case "socialStudies":
@@ -247,8 +241,7 @@ export function setQuizWhere() {
             break;
     }
 
-    console.log(wheres);
-    document.getElementById("customQuizesWhereSelect").innerHTML = wheres
+    document.getElementById("customQuizesWhereSelect").innerHTML = '<option value="指定なし">指定なし'+ wheres
         .map(word => `<option value="${word}">` + word)
         .join("");
 }
@@ -256,7 +249,13 @@ export function setQuizWhere() {
 export function setQuizMyProblemSets() {
     let myProblemSetses = null;
     myProblemSetses = allMyProblemSets.map(u => u.myProblemSets);
-    document.getElementById("customQuizesMyProblemSetsSelect").innerHTML = myProblemSetses
+    document.getElementById("customQuizesMyProblemSetsSelect").innerHTML ='<option value="指定なし">指定なし'+ myProblemSetses
         .map(word => `<option value="${word}">` + word)
         .join("");
+}
+
+function onShowHomeQuiz(){
+    setQuizUnit();
+    setQuizWhere();
+    setQuizMyProblemSets();
 }

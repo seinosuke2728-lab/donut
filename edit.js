@@ -133,8 +133,15 @@ export function initEdit() {
     document.getElementById("editFinish").addEventListener("click", async e => {
         navigateToNextEditPanel();
         saveState(state.edit);
-        saveUnit(state.edit.subject, state.edit.unit);
-        saveWhere(state.edit.subject, state.edit.book);
+        alert(state.edit.unit);
+        if (state.edit.unit !== "指定なし") {
+            console.log(state.edit.unit);
+            saveUnit(state.edit.subject, state.edit.unit);
+        }
+        if (state.edit.book !== "指定なし") {
+            saveWhere(state.edit.subject, state.edit.book);
+
+        }
     });
 
     document.getElementById("editMyProblemSets").addEventListener("click", e => {
@@ -143,8 +150,11 @@ export function initEdit() {
     });
 
     document.getElementById("myProblemSetsDecideButton").addEventListener("click", async e => {
-        await saveMyProblemSets(document.getElementById("myProblemSetsInput").value);
-        renderMyProblemSetsDialog();
+        if (editMyProblemSetsValidate()) {
+            await saveMyProblemSets(document.getElementById("myProblemSetsInput").value);
+            renderMyProblemSetsDialog();
+
+        }
     });
 
     document.getElementById("editContinue").addEventListener("click", e => {
@@ -216,13 +226,12 @@ export function renderEditSetting2() {
 export function renderEditSetting3() {
     document.getElementById("quizContentSettingQuizText").value = state.edit.question;
     document.getElementById("quizContentSettingAnswerText").value = state.edit.answer;
-    if(state.edit.mode === "miss"){
+    if (state.edit.mode === "miss") {
         document.getElementById("quizContentSettingMyAnswerText").classList.add("active");
         document.getElementById("quizContentSettingMyAnswerLabel").classList.add("active");
     } else {
         document.getElementById("quizContentSettingMyAnswerText").classList.remove("active");
         document.getElementById("quizContentSettingMyAnswerLabel").classList.remove("active");
-        console.log(state.edit.mode);
     }
 }
 
@@ -240,16 +249,13 @@ export function renderMyProblemSetsDialog() {
 
 
     const myProblemSets = allMyProblemSets.map(m => m.myProblemSets);
-    console.log(myProblemSets);
     buttonlist.innerHTML = myProblemSets
         .map(word => {
 
             return `<button class="myProblemSetsButton button u-text-lg center-y transition active-scale w-80per" value="${word}" id="${word}">` + word
-            console.log(`<button class="myProblemSetsButton button u-text-lg center-y transition active-scale w-80per" value="${word}" id="${word}">` + word);
         })
         .join("");
 
-    console.log(buttonlist.innerHTML);
     document
         .querySelectorAll(".myProblemSetsButton")
         .forEach(btn => {
@@ -294,7 +300,6 @@ export function initEditSetting() {
 export function setEditUnit() {
     const subject = document.getElementById("otherSettingSubjectSelect").value;
     let units = null;
-    console.log(subject);
     switch (subject) {
         case "japanese":
             units = japaneseUnit.map(u => u.unit);
@@ -324,7 +329,7 @@ export function setEditUnit() {
 
     const datalist = document.getElementById("unitList");
 
-    datalist.innerHTML = units
+    datalist.innerHTML = '<option value="指定なし">指定なし' + units
         .map(word => `<option value="${word}">`)
         .join("");
 }
@@ -335,7 +340,6 @@ export function setEditWhere() {
     switch (subject) {
         case "japanese":
             wheres = japaneseWhere.map(u => u.where);
-            console.log(wheres);
             break;
 
         case "socialStudies":
@@ -362,7 +366,7 @@ export function setEditWhere() {
 
     const datalist = document.getElementById("whereList");
 
-    datalist.innerHTML = wheres
+    datalist.innerHTML = '<option value="指定なし">指定なし' + wheres
         .map(word => `<option value="${word}">`)
         .join("");
 }
@@ -371,7 +375,6 @@ export function setEditWhere() {
 function navigateToNextEditPanel() {
 
     const currentPanel = state.navigation.currentPanel;
-    console.log("currentPanel", currentPanel);
     if (currentPanel === "editSetting1") {
         state.edit.currentPanel = "editSetting2";
         navigate({ panel: "editSetting2" });
@@ -422,7 +425,7 @@ function editNormalize3() {
     state.edit.question = state.edit.question.trim();
     state.edit.answer = state.edit.answer.trim();
     state.edit.myAnswer = state.edit.myAnswer.trim();
-    if (!state.mode === "miss") {
+    if (state.mode !== "miss") {
         state.edit.myAnswer = "no answer";
     }
 }
@@ -484,4 +487,13 @@ function editValidate3() {
 
 function editValidate4() {
     return true;
+}
+
+function editMyProblemSetsValidate() {
+    if (document.getElementById("myProblemSetsInput").value) {
+        return true;
+    } else {
+        alert("値を入力してください");
+        return false;
+    }
 }

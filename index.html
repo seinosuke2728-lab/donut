@@ -92,6 +92,16 @@
           <span class="material-symbols-outlined">filter_alt</span>
         </button>
       </div>
+
+      <div class="scroll-y">
+        <div id="updateButtonList" class="flex col center gap-40 p-40">
+
+        </div>
+        <div id="sentinel" class="obserber"></div>
+
+      </div>
+
+
       <button id="addButton" data-page="editSetting" data-panel="editSetting1"
         class="material-symbols-outlined button nextButton fixed bottom-25 right-25 hover-scale active-scale transition">add</button>
     </div>
@@ -111,8 +121,7 @@
         </div>
         <div id="delinquentToday" class="visibility-grid grid-1-1 gap-40-20">
           <label class="text u-text-lg text-bold">
-            <input id="delinquentCheckbox" type="checkbox"
-              class="checkBox">滞納</label>
+            <input id="delinquentCheckbox" type="checkbox" class="checkBox">滞納</label>
           <div id="delinquent" class="horizontalContainer">
             <h3 id="delinquentNumber" class="numberOfQuizes"></h3>
             <span class="material-symbols-outlined">delete</span>
@@ -426,6 +435,7 @@
     </div>
   </div>
   <script type="module" src="app.js" defer></script>
+  <script type="module" src="state.js" defer></script>
   <script type="module" src="navigation.js" defer></script>
   <script type="module" src="db.js" defer></script>
   <script type="module" src="edit.js" defer></script>

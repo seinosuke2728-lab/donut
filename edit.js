@@ -1,6 +1,7 @@
-import { addMyProblemSets } from "./db.js";
-import { state, saveState, saveUnit, saveWhere, japaneseUnit, socialStudiesUnit, scienceUnit, EnglishUnit, mathUnit, otherUnit, myProblemSetsDialogMode, socialStudiesWhere, japaneseWhere, mathWhere, scienceWhere, EnglishWhere, otherWhere, allMyProblemSets, saveMyProblemSets } from "./state.js"
+import { addMyProblemSets, upDateQuiz } from "./db.js";
+import { state, saveState, saveUnit, saveWhere, japaneseUnit, socialStudiesUnit, scienceUnit, EnglishUnit, mathUnit, otherUnit, myProblemSetsDialogMode, socialStudiesWhere, japaneseWhere, mathWhere, scienceWhere, EnglishWhere, otherWhere, allMyProblemSets, saveMyProblemSets, continueEditInit, roadQuizes, setQuizFromState } from "./state.js"
 import { navigate } from "./navigation.js"
+import { onShowHomeEdit } from "./home.js";
 
 export function initEdit() {
     document.getElementById("whileMode").addEventListener("click", e => {
@@ -131,17 +132,32 @@ export function initEdit() {
 
 
     document.getElementById("editFinish").addEventListener("click", async e => {
-        navigateToNextEditPanel();
-        saveState(state.edit);
-        alert(state.edit.unit);
-        if (state.edit.unit !== "指定なし") {
-            console.log(state.edit.unit);
-            saveUnit(state.edit.subject, state.edit.unit);
-        }
-        if (state.edit.book !== "指定なし") {
-            saveWhere(state.edit.subject, state.edit.book);
+        if (state.isUpdate) {
+            console.log(state.edit);
+            await upDateQuiz(setQuizFromState(state.edit,state.currentUpdateQuiz));
+            console.log(setQuizFromState(state.edit,state.currentUpdateQuiz));
+            await roadQuizes();
+            if (state.edit.unit !== "指定なし") {
+                console.log(state.edit.unit);
+                saveUnit(state.edit.subject, state.edit.unit);
+            }
+            if (state.edit.book !== "指定なし") {
+                saveWhere(state.edit.subject, state.edit.book);
+            }
 
+        } else {
+            await saveState(state.edit);
+            await roadQuizes();
+            alert(state.edit.unit);
+            if (state.edit.unit !== "指定なし") {
+                console.log(state.edit.unit);
+                saveUnit(state.edit.subject, state.edit.unit);
+            }
+            if (state.edit.book !== "指定なし") {
+                saveWhere(state.edit.subject, state.edit.book);
+            }
         }
+        navigateToNextEditPanel();
     });
 
     document.getElementById("editMyProblemSets").addEventListener("click", e => {
@@ -158,8 +174,19 @@ export function initEdit() {
     });
 
     document.getElementById("editContinue").addEventListener("click", e => {
-        const dialog = document.getElementById("continueDialog");
-        dialog.showModal();
+        state.isUpdate = false;
+        saveState(state.edit);
+        alert(state.edit.unit);
+        if (state.edit.unit !== "指定なし") {
+            console.log(state.edit.unit);
+            saveUnit(state.edit.subject, state.edit.unit);
+        }
+        if (state.edit.book !== "指定なし") {
+            saveWhere(state.edit.subject, state.edit.book);
+
+        }
+        continueEditInit();
+        navigate({ page: "editSetting", panel: "editSetting1" });
     });
 
 
@@ -229,6 +256,7 @@ export function renderEditSetting3() {
     if (state.edit.mode === "miss") {
         document.getElementById("quizContentSettingMyAnswerText").classList.add("active");
         document.getElementById("quizContentSettingMyAnswerLabel").classList.add("active");
+        document.getElementById("quizContentSettingMyAnswerText").value = state.edit.myAnswer
     } else {
         document.getElementById("quizContentSettingMyAnswerText").classList.remove("active");
         document.getElementById("quizContentSettingMyAnswerLabel").classList.remove("active");
@@ -395,6 +423,7 @@ function navigateToNextEditPanel() {
     } else if (currentPanel === "editSetting5") {
         state.edit.currentPanel = null;
         navigate({ page: "home", panel: "homeEdit" });
+        onShowHomeEdit();
     }
 }
 function editNormalize1() {
@@ -497,3 +526,4 @@ function editMyProblemSetsValidate() {
         return false;
     }
 }
+

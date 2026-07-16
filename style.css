@@ -23,6 +23,10 @@ dialog{
   box-shadow: 0 3px 8px rgba(0, 0, 0, .3);
 }
 
+p{
+  margin: 0;
+}
+
 .material-symbols-outlined{
   display: inline-block;
   width: 1em;
@@ -89,6 +93,7 @@ dialog{
     --lightYellow-color: #fdf1b4;
     --browne-color: #a65717;
     --cream-color: #edeade;
+    --lightCream-color: #fffdf5;
     --lightBrowne-color:#bc6e2f;
     --darkBrowne-color:#572700;
 }
@@ -108,6 +113,13 @@ dialog{
   background: var(--yellow-color);
   color: var(--cream-color);
   transition: .25s;
+}
+
+.updateButton{
+  border-radius: 30px;
+  width: 500px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .1);
+  background: var(--lightCream-color);
 }
 
 .chipButton{
@@ -164,6 +176,10 @@ dialog{
   color:var(--darkBrowne-color);
 }
 
+.lightText{
+  color:var(--lightBrowne-color);
+}
+
 .textBox{
   border-radius: 8px;
   height: 30px;
@@ -214,6 +230,12 @@ dialog{
 
 }
 
+.chip{
+  height: 20px;
+  border-radius: 999px;
+  background-color: var(--lightYellow-color);
+}
+
 .topbar{
 height: 60px;
 border-bottom: 1px solid #ccc;
@@ -236,6 +258,20 @@ color: var(--darkBrowne-color);
 }
 
 .topbarProgressFill{
+  border-radius: 10px;
+  width: 30%;
+  height: 100%;
+  background: var(--darkBrowne-color);
+}
+
+.currentPerProgressBar{
+  height: 15px;
+  width: 80%;
+  border-radius: 10px;
+  background: #ddd;
+}
+
+.currentPerProgressFill{
   border-radius: 10px;
   width: 30%;
   height: 100%;
@@ -300,6 +336,15 @@ color: var(--darkBrowne-color);
   width: 30%;
 }
 
+.line{
+
+    height: 1px;
+    background-color: var(--browne-color);
+}
+
+.obserber{
+  height:10px;
+}
 
 
 
@@ -376,8 +421,13 @@ color: var(--darkBrowne-color);
 .ml-20 { margin-left: 20px; }
 .mr-20 { margin-right: 20px; }
 
+.ml-au { margin-left: auto; }
+.mr-au { margin-right: auto;}
+
 .p-10 { padding: 10px; }
+.p-15 { padding: 15px; }
 .p-20 { padding: 20px; }
+.p-40 { padding: 40px; }
 .pt-20{padding-top:20px;}
 .pt-150{padding-top:150px;}
 .pb-75{ padding-bottom:75px;}
@@ -463,6 +513,10 @@ color: var(--darkBrowne-color);
 
 /* テキスト */
 
+
+.u-text-xs {
+    font-size: 10px;
+}
 
 .u-text-sm {
     font-size: 14px;

@@ -1,7 +1,16 @@
 import { showVisibility } from "./navigation.js";
-import { getAllQuizes, getAllUnit, addUnit, addWhere, save, searchCustom, addMyProblemSets, getAllMyProblemSets, getAllWhere } from "./db.js";
+import { getAllQuizes, getAllUnit, addUnit, addWhere, save, searchCustom, addMyProblemSets, getAllMyProblemSets, getAllWhere, upDateQuiz, Question, getNextDate } from "./db.js";
 
 export let allQuizes = [];
+Object.defineProperty(window, "count", {
+  get() {
+    return allQuizes;
+  },
+  set(value) {
+    console.log(`count: ${_count} → ${value}`);
+    allQuizes = value;
+  }
+});
 export let allUnit = [];
 export let japaneseUnit = [];
 export let mathUnit = [];
@@ -35,6 +44,7 @@ export const state = {
     unit: "",
     book: "",
     page: "",
+    number: "",
     numberA: "",
     numberB: "",
     where: "",
@@ -102,10 +112,19 @@ export const state = {
 
   timeMs: null,
 
-  today: null
+  today: null,
+
+  isUpdate: false,
+
+  loadNumber: 0,
+
+  updateQuizes: [],
+  currentUpdateQuiz:null
 };
 
+window.state=state;
 
+window.allQuizes=allQuizes;
 
 
 export function renderQuizContentState() {
@@ -118,8 +137,9 @@ export async function saveState(state) {
   alert(allQuizes.length);
 }
 
-export async function roadQuizes(){
+export async function roadQuizes() {
   allQuizes = await getAllQuizes();
+  console.log(allQuizes);
 }
 
 export async function saveUnit(subject, unit) {
@@ -171,3 +191,98 @@ export function classifyAll() {
   classifyWhere();
 }
 
+
+export function addEditInit() {
+  state.edit.mode = "while",
+    state.edit.subject = "",
+    state.edit.unit = "",
+    state.edit.book = "",
+    state.edit.page = "",
+    state.edit.numberA = "",
+    state.edit.numberB = "",
+    state.edit.where = "",
+    state.edit.importance = "",
+    state.edit.question = "",
+    state.edit.answer = "",
+    state.edit.myAnswer = "",
+    state.edit.missKind = "",
+    state.edit.lesson = "",
+    state.edit.myProblemSets = []
+
+}
+
+export function continueEditInit() {//つづけるを選んだ時に、stateをいじる
+  state.edit.answer = "";
+  state.edit.book = state.edit.book;
+  state.edit.importance = state.edit.importance;
+  state.edit.lesson = "";
+  state.edit.missKind = "";
+  state.edit.mode = state.edit.mode;
+  state.edit.myAnswer = "";
+  state.edit.myProblemSets = state.edit.myProblemSets;
+  state.edit.numberA = "";
+  state.edit.numberB = "";
+  state.edit.page = state.edit.page;
+  state.edit.question = "";
+  state.edit.subject = state.edit.subject;
+  state.edit.unit = state.edit.unit;
+  state.edit.where = state.edit.where;
+}
+
+export function updateEditInit(quiz) {//上書きの時に、stateを代入する7
+  setStateFromQuiz(quiz);
+
+}
+
+
+
+export function setQuizFromState(editState,question = new Question()) {
+  if (editState.editingQuestionId === null) {
+    question.question = editState.question;
+    question.answer = editState.answer;
+    question.correctTimes = 0;
+    question.formerDate = Date.now();
+    question.importance = editState.importance;
+    question.isChecked = false;
+    question.isCompleted = false;
+    question.lesson = editState.lesson;
+    question.makeDate = Date.now();
+    question.missKind = editState.missKind;
+    question.mode = editState.mode;
+    question.myAnswer = editState.myAnswer;
+    question.myProblemSets = editState.myProblemSets;
+    question.progress = 0;
+    question.nextDate = getNextDate(question.importance, question.progress, question.formerDate);
+    question.seconds = null;
+    question.subject = editState.subject;
+    question.times = 0;
+    question.unit = editState.unit;
+    question.where = editState.book + String(editState.page) + "P" + " " + String(editState.numberA) + "-" + String(editState.numberB);
+    question.page = editState.page;
+    question.book = editState.book;
+    question.number = editState.number;
+    question.numberA = editState.numberA;
+    question.numberB = editState.numberB;
+  }
+  return question;
+}
+
+export function setStateFromQuiz(quiz) {
+
+  state.edit.answer = quiz.answer;
+  state.edit.book = quiz.book;
+  state.edit.importance = quiz.importance;
+  state.edit.lesson = quiz.lesson;
+  state.edit.missKind = quiz.missKind;
+  state.edit.mode = quiz.mode;
+  state.edit.myAnswer = quiz.myAnswer;
+  state.edit.myProblemSets = quiz.myProblemSets;
+  state.edit.numberA = quiz.numberA;
+  state.edit.numberB = quiz.numberB;
+  state.edit.page = quiz.page;
+  state.edit.question = quiz.question;
+  state.edit.subject = quiz.subject;
+  state.edit.unit = quiz.unit;
+  state.edit.where = quiz.where;
+
+}

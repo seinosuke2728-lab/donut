@@ -1,4 +1,4 @@
-import { allQuizes, allUnit, setAll, allWhere, allMyProblemSets, classifyAll } from "./state.js";
+import { allQuizes, allUnit, setAll, allWhere, allMyProblemSets, classifyAll,setQuizFromState } from "./state.js";
 
 const today = new Date();
 let db;
@@ -35,7 +35,7 @@ mDialog.addEventListener("click", (e) => {
 });
 
 
-class Question {
+export class Question {
     question;
     answer;
     myAnswer;
@@ -57,6 +57,10 @@ class Question {
     progress;
     isCompleted;
     seconds;
+    page;
+    number;
+    numberA;
+    numberB;
 }
 
 class Unit {
@@ -73,7 +77,8 @@ class MyProblemSets {
 
 export async function initDB() {
 
-    deleteDb();
+
+
     await open();
 
     await setAll();
@@ -92,15 +97,24 @@ export async function save(state) {
 
     const request = store.add(setQuizFromState(state));
     return new Promise((resolve, reject) => {
-        request.onsuccess = async () => {
-
-            resolve();
+        request.onsuccess = () => {
+            console.log("Quiz saved successfully");
         };
 
         request.onerror = () => {
+            console.error("Save error:", request.error);
             reject(request.error);
         };
 
+        tx.oncomplete = () => {
+            console.log("Transaction complete");
+            resolve();
+        };
+
+        tx.onerror = () => {
+            console.error("Transaction error:", tx.error);
+            reject(tx.error);
+        };
     });
 }
 
@@ -111,15 +125,20 @@ export async function upDateQuiz(quiz) {
 
     const request = store.put(quiz);
     return new Promise((resolve, reject) => {
-        request.onsuccess = async () => {
-
-            resolve();
-        };
-
         request.onerror = () => {
+            console.error("Update error:", request.error);
             reject(request.error);
         };
 
+        tx.oncomplete = () => {
+            console.log("Update transaction complete");
+            resolve();
+        };
+
+        tx.onerror = () => {
+            console.error("Transaction error:", tx.error);
+            reject(tx.error);
+        };
     });
 
 }
@@ -131,15 +150,20 @@ export async function addUnit(subject, unit) {
 
     const request = store.put(setUnit(subject, unit));
     return new Promise((resolve, reject) => {
-        request.onsuccess = async () => {
-
-            resolve();
-        };
-
         request.onerror = () => {
+            console.error("Add unit error:", request.error);
             reject(request.error);
         };
 
+        tx.oncomplete = () => {
+            console.log("Add unit transaction complete");
+            resolve();
+        };
+
+        tx.onerror = () => {
+            console.error("Transaction error:", tx.error);
+            reject(tx.error);
+        };
     });
 
 }
@@ -151,15 +175,20 @@ export async function addWhere(subject, where) {
 
     const request = store.put(setWhere(subject, where));
     return new Promise((resolve, reject) => {
-        request.onsuccess = async () => {
-
-            resolve();
-        };
-
         request.onerror = () => {
+            console.error("Add where error:", request.error);
             reject(request.error);
         };
 
+        tx.oncomplete = () => {
+            console.log("Add where transaction complete");
+            resolve();
+        };
+
+        tx.onerror = () => {
+            console.error("Transaction error:", tx.error);
+            reject(tx.error);
+        };
     });
 
 }
@@ -171,15 +200,20 @@ export async function addMyProblemSets(myProblemSets) {
 
     const request = store.put(setMyProblemSets(myProblemSets));
     return new Promise((resolve, reject) => {
-        request.onsuccess = async () => {
-
-            resolve();
-        };
-
         request.onerror = () => {
+            console.error("Add myProblemSets error:", request.error);
             reject(request.error);
         };
 
+        tx.oncomplete = () => {
+            console.log("Add myProblemSets transaction complete");
+            resolve();
+        };
+
+        tx.onerror = () => {
+            console.error("Transaction error:", tx.error);
+            reject(tx.error);
+        };
     });
 
 }
@@ -380,33 +414,6 @@ async function deleteDb() {
     });
 }
 
-function setQuizFromState(editState) {
-    const question = new Question();
-    if (editState.editingQuestionId === null) {
-        question.question = editState.question;
-        question.answer = editState.answer;
-        question.correctTimes = 0;
-        question.formerDate = Date.now();
-        question.importance = editState.importance;
-        question.isChecked = false;
-        question.isCompleted = false;
-        question.lesson = editState.lesson;
-        question.makeDate = Date.now();
-        question.missKind = editState.missKind;
-        question.mode = editState.mode;
-        question.myAnswer = editState.myAnswer;
-        question.myProblemSets = editState.myProblemSets;
-        question.progress = 0;
-        question.nextDate = getNextDate(question.importance, question.progress, question.formerDate);
-        question.seconds = null;
-        question.subject = editState.subject;
-        question.times = 0;
-        question.unit = editState.unit;
-        question.where = editState.book + String(editState.page) + "P" + " " + String(editState.numberA) + "-" + String(editState.numberB);
-        question.book = editState.book;
-    }
-    return question;
-}
 
 function setUnit(subject, unit) {
     const u = new Unit();

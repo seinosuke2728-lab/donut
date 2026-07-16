@@ -1,11 +1,13 @@
+import { upDateQuiz } from "./db.js";
 import { navigate } from "./navigation.js";
 import { startQuiz } from "./quiz.js";
-import { allMyProblemSets, allUnit, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state } from "./state.js";
+import { addEditInit, allMyProblemSets, allQuizes, allUnit, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state, updateEditInit } from "./state.js";
 
 export function initHome() {
     document.getElementById("homeSidebarEdit").addEventListener("click", e => {
         state.homeMode = "edit";
         navigate({ page: "home", panel: "homeEdit" });
+        onShowHomeEdit();
     });
     document.getElementById("homeSidebarQuiz").addEventListener("click", e => {
         state.homeMode = "quiz";
@@ -21,7 +23,12 @@ export function initHome() {
         navigate({ page: "home", panel: "homeSetting" });
     });
 
+
+
+
     document.getElementById("addButton").addEventListener("click", e => {
+        state.isUpdate = false;
+        addEditInit();
         navigate({ page: "editSetting", panel: "editSetting1" });
     });
 
@@ -95,8 +102,8 @@ export function initHome() {
     });
 
     document.getElementById("nextButton").addEventListener("click", e => {
-        const today=new Date();
-        state.today=today.setHours(0,0,0,0);
+        const today = new Date();
+        state.today = today.setHours(0, 0, 0, 0);
         if (state.customOrHomework === "homework") {
             setQuizSettingHomeworkState();
         } else if (state.customOrHomework === "custom") {
@@ -104,8 +111,8 @@ export function initHome() {
         }
         startQuiz();
     });
-
     navigate({ page: "home", panel: "homeEdit" });
+    onShowHomeEdit();
 }
 
 function setQuizSettingCustomState() {
@@ -154,6 +161,7 @@ export function renderHome() {
 }
 
 function renderHomeEdit() {
+
 }
 
 function renderHomeQuiz() {
@@ -206,7 +214,7 @@ export function setQuizUnit() {
     }
     console.log(japaneseUnit);
     console.log(allUnit);
-    document.getElementById("customQuizesUnitSelect").innerHTML = '<option value="指定なし">指定なし'+units
+    document.getElementById("customQuizesUnitSelect").innerHTML = '<option value="指定なし">指定なし' + units
         .map(word => `<option value="${word}">` + word)
         .join("");
 }
@@ -241,7 +249,7 @@ export function setQuizWhere() {
             break;
     }
 
-    document.getElementById("customQuizesWhereSelect").innerHTML = '<option value="指定なし">指定なし'+ wheres
+    document.getElementById("customQuizesWhereSelect").innerHTML = '<option value="指定なし">指定なし' + wheres
         .map(word => `<option value="${word}">` + word)
         .join("");
 }
@@ -249,13 +257,126 @@ export function setQuizWhere() {
 export function setQuizMyProblemSets() {
     let myProblemSetses = null;
     myProblemSetses = allMyProblemSets.map(u => u.myProblemSets);
-    document.getElementById("customQuizesMyProblemSetsSelect").innerHTML ='<option value="指定なし">指定なし'+ myProblemSetses
+    document.getElementById("customQuizesMyProblemSetsSelect").innerHTML = '<option value="指定なし">指定なし' + myProblemSetses
         .map(word => `<option value="${word}">` + word)
         .join("");
 }
 
-function onShowHomeQuiz(){
+function onShowHomeQuiz() {
     setQuizUnit();
     setQuizWhere();
     setQuizMyProblemSets();
+}
+
+export function onShowHomeEdit() {
+    state.updateQuizes=[];
+    const observer = new IntersectionObserver(async (entries) => {
+        if (entries[0].isIntersecting) {
+            console.log(state.updateQuizes?.length);
+            console.log(allQuizes?.length);
+            if (state.updateQuizes?.length === allQuizes?.length) {
+                alert("少ない");
+            } else {
+                await loadQuizesToUpdate();
+
+            }
+        }
+    });
+
+    observer.observe(document.getElementById("sentinel"));
+
+
+    const buttonlist = document.getElementById("updateButtonList");
+    buttonlist.innerHTML = "";
+    state.loadNumber = 0;
+    console.log(state.loadNumber);
+}
+
+function loadQuizesToUpdate() {
+    state.updateQuizes = allQuizes.slice(state.loadNumber, state.loadNumber + 20);
+    console.log(allQuizes);
+    const buttonlist = document.getElementById("updateButtonList");
+    console.log(state.updateQuizes);
+    let buttonCounter = 0;
+    state.updateQuizes.forEach(quiz => {
+        let buttonHtml = "";
+        buttonHtml = `<button class="button updateButton flex col p-20 gap-10" data-quiz-id="${buttonCounter}">
+        <div class="flex row gap-10 center">
+        <p class="chip p-15 flex center lightText">${quiz.subject}</p>
+              <p class="lightText">${quiz.unit}</p>
+              <div class="flex row gap-10 ml-au">
+                  ${getImportanceHtml(quiz)}
+                  </div>
+            </div>
+            <div class="flex row p-20">
+              <p class="text u-text-md text-bold">${quiz.question}</p>
+            </div>
+            <div class="flex row">
+              <p class="lightText u-text-xs">${Math.round(quiz.correctTimes / quiz.times * 100) + "%"}</p>
+            </div>
+            <div class="flex row gap-10 center">
+              <div class="currentPerProgressBar">
+                <div class="currentPerProgressFill"></div>
+              </div>
+              <p class="lightText u-text-sm ml-au">80%</p>
+            </div>
+            <div class="line"></div>
+            <div class="flex row">
+              <p class="lightText u-text-sm ml-au">${new Date(quiz.makeDate).toLocaleDateString()}</p>
+            </div>
+
+            <div class="flex row">
+              <p class="lightText u-text-sm">${quiz.where}</p>
+              <p class="text u-text-sm ml-au">${new Date(quiz.nextDate).toLocaleDateString()}</p>
+            </div>
+
+          </button>`
+
+
+
+
+
+
+        buttonlist.innerHTML = buttonlist.innerHTML + buttonHtml;
+        buttonCounter++;
+
+    });
+
+    state.loadNumber = state.loadNumber + 20;
+
+    document.querySelectorAll(".updateButton").forEach(updateButton => {
+        updateButton.addEventListener("click", e => {
+            const button = e.target.closest(".updateButton");
+            if (!button) return;
+
+            const index = Number(button.dataset.quizId);
+            console.log("Quiz Index:", index, "Quiz:", state.updateQuizes[index]);
+
+            state.currentUpdateQuiz=structuredClone(state.updateQuizes[index]);
+            console.log(state.currentUpdateQuiz);
+
+            state.isUpdate = true;
+            updateEditInit(state.updateQuizes[index]);
+            navigate({ page: "editSetting", panel: "editSetting1" });
+        });
+    })
+}
+
+function getImportanceHtml(quiz) {
+    let buttonHtml = `<p id="quizContentImportance1"
+                  class="material-symbols-outlined visibility-block active star1 text u-text-lg">
+                  kid_star</p>`
+    if (quiz.importance >= 2) {
+        buttonHtml = buttonHtml + `<p id="quizContentImportance2" class="material-symbols-outlined visibility-block star2 text u-text-lg">
+                  kid_star</p>`
+    }
+    if (quiz.importance >= 3) {
+        buttonHtml = buttonHtml + `<p id="quizContentImportance3" class="material-symbols-outlined visibility-block star3 text u-text-lg">
+                  kid_star</p>`
+    }
+    if (quiz.importance >= 4) {
+        buttonHtml = buttonHtml + `<p id="quizContentImportance4" class="material-symbols-outlined visibility-block star4 text u-text-lg">
+                  kid_star</p>`
+    }
+    return buttonHtml;
 }

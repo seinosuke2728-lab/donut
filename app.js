@@ -4,8 +4,8 @@ import { initEdit } from "./edit.js";
 import { initQuiz } from "./quiz.js";
 import { initHome } from "./home.js";
 
-function init() {
-  initDB();
+async function init() {
+  await initDB();
   initNavigation();
   initEdit();
   initQuiz();

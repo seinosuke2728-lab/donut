@@ -1,6 +1,6 @@
 import { getNextDate, searchCustom, searchHomework, upDateQuiz, getAllQuizes } from "./db.js";
 import { navigate } from "./navigation.js";
-import { allMyProblemSets, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, renderQuizContentState, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state, allQuizes, roadQuizes } from "./state.js";
+import { allMyProblemSets, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, renderQuizContentState, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state, allQuizes, roadQuizes, setStateFromQuiz } from "./state.js";
 
 
 export function initQuiz() {
@@ -176,12 +176,12 @@ export function renderQuiz() {
     }
     if (!state.quiz.times) {
         document.getElementById("quizContentCurrentPercent").textContent = Math.round(state.quiz.correctTimes / state.quiz.times * 100) + "%";
-    }else{
+    } else {
         document.getElementById("quizContentCurrentPercent").textContent = "New Quiz!";
     }
-    if(!state.quiz.secondsRecord){
+    if (!state.quiz.secondsRecord) {
         document.getElementById("quizContentSeconds").textContent = state.quiz.secondsRecord + "秒";
-    }else{
+    } else {
         document.getElementById("quizContentSeconds").textContent = "";
     }
     document.getElementById("quizContentLesson1").textContent = state.quiz.lesson;
@@ -210,6 +210,7 @@ async function inCorrectQuiz(quiz) {
     quiz.nextDate = getNextDate(quiz.importance, quiz.progress, quiz.formerDate);
     console.log(quiz);
     await upDateQuiz(quiz);
+    await roadQuizes();
 
 
 }
@@ -223,12 +224,12 @@ async function correctQuiz(quiz) {
     quiz.nextDate = getNextDate(quiz.importance, quiz.progress, quiz.formerDate);
 
     if (quiz.secondsRecord == null || quiz.seconds < quiz.secondsRecord) {
-        quiz.secondsRecord = quiz.seconds;
+        quiz.secondsReco
+        await upDateQuiz(quiz);
+        await roadQuizes();
+
+
     }
-    await upDateQuiz(quiz);
-    await roadQuizes();
 
 
 }
-
-

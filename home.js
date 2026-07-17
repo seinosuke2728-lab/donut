@@ -1,7 +1,7 @@
 import { upDateQuiz } from "./db.js";
 import { navigate } from "./navigation.js";
 import { startQuiz } from "./quiz.js";
-import { addEditInit, allMyProblemSets, allQuizes, allUnit, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state, updateEditInit } from "./state.js";
+import { addEditInit, allMyProblemSets, allQuizes, allUnit, EnglishUnit, EnglishWhere, japaneseUnit, japaneseWhere, mathUnit, mathWhere, otherUnit, otherWhere, roadQuizes, scienceUnit, scienceWhere, socialStudiesUnit, socialStudiesWhere, state, updateEditInit } from "./state.js";
 
 export function initHome() {
     document.getElementById("homeSidebarEdit").addEventListener("click", e => {
@@ -97,7 +97,7 @@ export function initHome() {
     });
 
     document.getElementById("onlyCheckCheckbox").addEventListener("change", e => {
-        state.searchCustomState.isCheckedOnly = e.target.checked;
+        state.isCheckedOnly = e.target.checked;
         renderHomeQuiz();
     });
 
@@ -269,7 +269,7 @@ function onShowHomeQuiz() {
 }
 
 export function onShowHomeEdit() {
-    state.updateQuizes=[];
+    state.updateQuizes = [];
     const observer = new IntersectionObserver(async (entries) => {
         if (entries[0].isIntersecting) {
             console.log(state.updateQuizes?.length);
@@ -300,11 +300,13 @@ function loadQuizesToUpdate() {
     let buttonCounter = 0;
     state.updateQuizes.forEach(quiz => {
         let buttonHtml = "";
-        buttonHtml = `<button class="button updateButton flex col p-20 gap-10" data-quiz-id="${buttonCounter}">
+        buttonHtml = `<div class="button updateButton flex col p-20 gap-10" data-quiz-id="${buttonCounter}">
         <div class="flex row gap-10 center">
         <p class="chip p-15 flex center lightText">${quiz.subject}</p>
               <p class="lightText">${quiz.unit}</p>
-              <div class="flex row gap-10 ml-au">
+                  ${getIsCheckedHtml(quiz,buttonCounter)}
+
+              <div class="flex row gap-10">
                   ${getImportanceHtml(quiz)}
                   </div>
             </div>
@@ -330,7 +332,7 @@ function loadQuizesToUpdate() {
               <p class="text u-text-sm ml-au">${new Date(quiz.nextDate).toLocaleDateString()}</p>
             </div>
 
-          </button>`
+          </div>`
 
 
 
@@ -352,12 +354,32 @@ function loadQuizesToUpdate() {
             const index = Number(button.dataset.quizId);
             console.log("Quiz Index:", index, "Quiz:", state.updateQuizes[index]);
 
-            state.currentUpdateQuiz=structuredClone(state.updateQuizes[index]);
+            state.currentUpdateQuiz = structuredClone(state.updateQuizes[index]);
             console.log(state.currentUpdateQuiz);
 
             state.isUpdate = true;
             updateEditInit(state.updateQuizes[index]);
             navigate({ page: "editSetting", panel: "editSetting1" });
+        });
+    })
+
+    document.querySelectorAll(".updateCheckedButton").forEach(updateCheckedButton => {
+        updateCheckedButton.addEventListener("click", async (e) => {
+            e.stopPropagation(); // 親へイベントが伝わるのを止める
+            console.log("stop");
+            const button = e.target.closest(".updateCheckedButton");
+            if (!button) return;
+            e.target.classList.toggle("isChecked");
+
+            const index = Number(button.dataset.checkId);
+            console.log("Quiz Index:", index, "Quiz:", state.updateQuizes[index]);
+
+            state.currentUpdateQuiz = structuredClone(state.updateQuizes[index]);
+            state.currentUpdateQuiz.isChecked = e.target.classList.contains("isChecked");
+
+
+            await upDateQuiz(state.currentUpdateQuiz);
+            await roadQuizes();
         });
     })
 }
@@ -377,6 +399,18 @@ function getImportanceHtml(quiz) {
     if (quiz.importance >= 4) {
         buttonHtml = buttonHtml + `<p id="quizContentImportance4" class="material-symbols-outlined visibility-block star4 text u-text-lg">
                   kid_star</p>`
+    }
+    return buttonHtml;
+}
+
+function getIsCheckedHtml(quiz,buttonCounter) {
+    let buttonHtml;
+    if (quiz.isChecked) {
+        buttonHtml = `<button class="button updateCheckedButton text material-symbols-outlined transition hover-scale active-scale ml-au isChecked" data-check-id="${buttonCounter}">check</button>`
+
+    }else{
+        buttonHtml = `<button class="button updateCheckedButton text material-symbols-outlined transition hover-scale active-scale ml-au" data-check-id="${buttonCounter}">check</button>`
+    
     }
     return buttonHtml;
 }

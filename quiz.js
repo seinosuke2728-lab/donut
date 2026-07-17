@@ -49,6 +49,16 @@ export function initQuiz() {
         document.getElementById("quizContentBottombarToggle").classList.remove("active");
     });
 
+    document.getElementById("changeCheck").addEventListener("click", e => {
+        state.quiz.isChecked = !state.quiz.isChecked;
+        document.getElementById("changeCheck").classList.toggle("isChecked");
+    });
+
+    document.getElementById("buy").addEventListener("click", e => {
+        state.quiz.isCompleted = !state.quiz.isCompleted;
+        document.getElementById("buy").classList.toggle("isBought");
+    });
+
 }
 
 
@@ -62,7 +72,8 @@ export function getCustomQuizesList() {/*state.Customからquizの配列を作�
         state.searchCustomState.unit,
         state.searchCustomState.myProblemSets,
         state.searchCustomState.subject,
-        state.searchCustomState.number)
+        state.searchCustomState.number,
+        state.isCheckedOnly)
 
 }
 
@@ -186,6 +197,19 @@ export function renderQuiz() {
     }
     document.getElementById("quizContentLesson1").textContent = state.quiz.lesson;
     document.getElementById("quizContentLesson2").textContent = state.quiz.lesson;
+    if (state.quiz.isChecked) {
+        document.getElementById("changeCheck").classList.add("isChecked");
+    } else {
+        document.getElementById("changeCheck").classList.remove("isChecked");
+    }
+    if (state.quiz.isCompleted) {
+        document.getElementById("buy").classList.remove("active");
+        document.getElementById("completeChance").classList.add("active");
+    } else {
+        document.getElementById("buy").classList.remove("isBought");
+        document.getElementById("buy").classList.add("active");
+        document.getElementById("completeChance").classList.remove("active");
+    }
     if (state.quiz.isAnswered) {
         document.getElementById("answer").classList.add("active");
         document.getElementById("quizContentNext").classList.remove("active");
@@ -204,9 +228,18 @@ export function renderQuiz() {
 
 
 async function inCorrectQuiz(quiz) {
+    if (quiz.isCompleted) {
+        quiz.isCompleted = false;
+    } else {
+
+        quiz.isCompleted = document.getElementById("buy").classList.contains("isBought");
+    }
+    quiz.isChecked = document.getElementById("changeCheck").classList.contains("isChecked");
     quiz.formerDate = Date.now();
     quiz.times = quiz.times + 1;
-    quiz.progress = quiz.progress + 1;
+    if (quiz.progress !== -1) {
+        quiz.progress = quiz.progress + 1;
+    }
     quiz.nextDate = getNextDate(quiz.importance, quiz.progress, quiz.formerDate);
     console.log(quiz);
     await upDateQuiz(quiz);
@@ -216,15 +249,22 @@ async function inCorrectQuiz(quiz) {
 }
 
 async function correctQuiz(quiz) {
+    if (quiz.isCompleted) {
+        quiz.progress = -1;
+    } else {
+        quiz.isCompleted = document.getElementById("buy").classList.contains("isBought");
+    }
+    quiz.isChecked = document.getElementById("changeCheck").classList.contains("isChecked");
     quiz.seconds = Math.floor(state.timeMs / 1000);
     quiz.formerDate = Date.now();
     quiz.times = quiz.times + 1;
     quiz.correctTimes = quiz.correctTimes + 1;
-    quiz.progress = quiz.progress + 1;
+    if (quiz.progress !== -1) {
+        quiz.progress = quiz.progress + 1;
+    }
     quiz.nextDate = getNextDate(quiz.importance, quiz.progress, quiz.formerDate);
 
     if (quiz.secondsRecord == null || quiz.seconds < quiz.secondsRecord) {
-        quiz.secondsReco
         await upDateQuiz(quiz);
         await roadQuizes();
 

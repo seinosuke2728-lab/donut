@@ -1,4 +1,4 @@
-import { allQuizes, allUnit, setAll, allWhere, allMyProblemSets, classifyAll,setQuizFromState } from "./state.js";
+import { allQuizes, allUnit, setAll, allWhere, allMyProblemSets, classifyAll, setQuizFromState } from "./state.js";
 
 const today = new Date();
 let db;
@@ -76,7 +76,6 @@ class MyProblemSets {
 }
 
 export async function initDB() {
-
 
 
     await open();
@@ -329,11 +328,12 @@ export async function getAllMyProblemSets() {
 }
 
 
-export function searchCustom(where, unit, myProblemSets, subject, number) {
+export function searchCustom(where, unit, myProblemSets, subject, number, isChecked) {
     let filtered = null;
     if (subject) {
         filtered = allQuizes.filter(quiz => quiz.subject === subject);
     }
+    console.log(filtered);
     if (!filtered || filtered.length === 0) {
         return false;
     }
@@ -343,6 +343,7 @@ export function searchCustom(where, unit, myProblemSets, subject, number) {
 
         }
     }
+    console.log(filtered);
     if (!filtered || filtered.length === 0) {
         return false;
     }
@@ -351,6 +352,7 @@ export function searchCustom(where, unit, myProblemSets, subject, number) {
             filtered = filtered.filter(quiz => quiz.book === where);
         }
     }
+    console.log(filtered);
     if (!filtered || filtered.length === 0) {
         return false;
     }
@@ -362,9 +364,17 @@ export function searchCustom(where, unit, myProblemSets, subject, number) {
 
         }
     }
-    if (where) {
-        filtered = filtered.filter(quiz => quiz.book === where);
+    console.log(filtered);
+    if (!filtered || filtered.length === 0) {
+        return false;
     }
+    if (isChecked) {
+        filtered = filtered.filter(quiz => quiz.isChecked === isChecked);
+    }
+    if (!filtered || filtered.length === 0) {
+        return false;
+    }
+    filtered = filtered.filter(quiz => quiz.progress >= 0)
     if (!filtered || filtered.length === 0) {
         return false;
     }

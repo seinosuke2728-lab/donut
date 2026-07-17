@@ -122,6 +122,14 @@ p{
   background: var(--lightCream-color);
 }
 
+.updateCheckedButton{
+  background: none;
+}
+
+.updateCheckedButton.isChecked{
+  color: var(--yellow-color);
+}
+
 .chipButton{
   border-radius: 8px;
   width: 100px;
@@ -291,6 +299,15 @@ color: var(--darkBrowne-color);
   color: var(--cream-color);
 }
 
+.bottombarIconButton.isChecked{
+  color: var(--yellow-color);
+}
+
+.bottombarIconButton.isBought{
+  color: var(--yellow-color);
+}
+
+
 .bottombarNormalButton{
   height: 60px;
   border-radius: 999px;
@@ -298,6 +315,8 @@ color: var(--darkBrowne-color);
   background: var(--browne-color);
   color: var(--cream-color);
 }
+
+
 
 .nextButton {
   width: 60px;

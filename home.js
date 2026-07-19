@@ -324,6 +324,7 @@ function loadQuizesToUpdate() {
             </div>
             <div class="line"></div>
             <div class="flex row">
+            ${getIsCompletedHtml(quiz)}
               <p class="lightText u-text-sm ml-au">${new Date(quiz.makeDate).toLocaleDateString()}</p>
             </div>
 
@@ -413,4 +414,14 @@ function getIsCheckedHtml(quiz,buttonCounter) {
     
     }
     return buttonHtml;
+}
+
+function getIsCompletedHtml(quiz){
+    let html;
+    if (quiz.progress===-1) {
+        html = `<p class="text">complete!!!</p>`
+    }else{
+        html ="";
+    }
+    return html;
 }

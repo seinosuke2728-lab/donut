@@ -59,6 +59,9 @@ export function initQuiz() {
         document.getElementById("buy").classList.toggle("isBought");
     });
 
+    document.getElementById("memo").addEventListener("click",{
+
+    });
 }
 
 
@@ -222,6 +225,7 @@ export function renderQuiz() {
         document.getElementById("quizContentInCorrect").classList.remove("active");
         document.getElementById("quizContentCorrect").classList.remove("active");
     }
+
 }
 
 

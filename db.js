@@ -5,6 +5,21 @@ let db;
 let request;
 const cDialog = document.getElementById("continueDialog");
 const mDialog = document.getElementById("myProblemSetsDialog");
+const amDialog = document.getElementById("addMemoDialog");
+amDialog.addEventListener("click", (e) => {
+    const rect = amDialog.getBoundingClientRect();
+
+    const inside =
+        rect.left <= e.clientX &&
+        e.clientX <= rect.right &&
+        rect.top <= e.clientY &&
+        e.clientY <= rect.bottom;
+
+    if (!inside) {
+        amDialog.close();
+    }
+});
+
 
 cDialog.addEventListener("click", (e) => {
     const rect = cDialog.getBoundingClientRect();
@@ -42,6 +57,7 @@ export class Question {
     where;
     book;
     myProblemSets;
+    memos;
     isChecked;
     makeDate;
     formerDate;
